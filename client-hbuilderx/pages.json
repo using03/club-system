@@ -41,6 +41,30 @@
       "style": {
         "navigationBarTitleText": "登录"
       }
+    },
+    {
+      "path": "pages/my/clubs",
+      "style": {
+        "navigationBarTitleText": "我的社团"
+      }
+    },
+    {
+      "path": "pages/my/activities",
+      "style": {
+        "navigationBarTitleText": "我的活动"
+      }
+    },
+    {
+      "path": "pages/my/registrations",
+      "style": {
+        "navigationBarTitleText": "报名记录"
+      }
+    },
+    {
+      "path": "pages/my/checkins",
+      "style": {
+        "navigationBarTitleText": "签到记录"
+      }
     }
   ],
   "globalStyle": {

@@ -4,7 +4,11 @@ export const authApi = {
   login: (data) => post('/auth/login', data),
   register: (data) => post('/auth/register', data),
   getProfile: () => get('/auth/profile'),
-  updateProfile: (data) => put('/auth/profile', data)
+  updateProfile: (data) => put('/auth/profile', data),
+  getMyClubs: () => get('/auth/my-clubs'),
+  getMyActivities: () => get('/auth/my-activities'),
+  getMyRegistrations: () => get('/auth/my-registrations'),
+  getMyCheckins: () => get('/auth/my-checkins')
 };
 
 export const clubApi = {

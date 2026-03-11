@@ -2,6 +2,10 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const Club = require('../models/Club');
+const Activity = require('../models/Activity');
+const Registration = require('../models/Registration');
+const CheckIn = require('../models/CheckIn');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
 
@@ -92,6 +96,81 @@ router.put('/profile', auth, async (req, res) => {
 
     const user = await User.findByIdAndUpdate(req.userId, updates, { new: true });
     return success(res, { user }, '更新成功');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.get('/my-clubs', auth, async (req, res) => {
+  try {
+    const clubs = await Club.find({ 'members.user': req.userId })
+      .populate('president', 'nickname avatar')
+      .sort({ createdAt: -1 });
+    return success(res, { clubs, total: clubs.length });
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.get('/my-activities', auth, async (req, res) => {
+  try {
+    const registrations = await Registration.find({ user: req.userId })
+      .populate({
+        path: 'activity',
+        populate: { path: 'club', select: 'name logo' }
+      })
+      .sort({ createdAt: -1 });
+
+    const activities = registrations
+      .filter(function(r) { return r.activity; })
+      .map(function(r) {
+        return {
+          _id: r.activity._id,
+          title: r.activity.title,
+          description: r.activity.description,
+          location: r.activity.location,
+          startTime: r.activity.startTime,
+          endTime: r.activity.endTime,
+          status: r.activity.status,
+          club: r.activity.club,
+          maxParticipants: r.activity.maxParticipants,
+          currentParticipants: r.activity.currentParticipants,
+          regStatus: r.status,
+          regId: r._id
+        };
+      });
+
+    return success(res, { activities, total: activities.length });
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.get('/my-registrations', auth, async (req, res) => {
+  try {
+    const registrations = await Registration.find({ user: req.userId })
+      .populate({
+        path: 'activity',
+        select: 'title startTime endTime location status club',
+        populate: { path: 'club', select: 'name' }
+      })
+      .sort({ createdAt: -1 });
+    return success(res, { registrations, total: registrations.length });
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.get('/my-checkins', auth, async (req, res) => {
+  try {
+    const checkins = await CheckIn.find({ user: req.userId })
+      .populate({
+        path: 'activity',
+        select: 'title startTime endTime location status club',
+        populate: { path: 'club', select: 'name' }
+      })
+      .sort({ checkInTime: -1 });
+    return success(res, { checkins, total: checkins.length });
   } catch (err) {
     return error(res, err.message, 500);
   }
