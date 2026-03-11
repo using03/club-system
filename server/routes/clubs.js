@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Club = require('../models/Club');
+const Activity = require('../models/Activity');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
 
@@ -104,6 +105,17 @@ router.put('/:id', auth, async (req, res) => {
       .populate('president', 'nickname avatar');
 
     return success(res, { club: updated }, '更新成功');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.get('/:id/activities', async (req, res) => {
+  try {
+    var activities = await Activity.find({ club: req.params.id })
+      .populate('organizer', 'nickname avatar')
+      .sort({ startTime: -1 });
+    return success(res, { activities: activities, total: activities.length });
   } catch (err) {
     return error(res, err.message, 500);
   }

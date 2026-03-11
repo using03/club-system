@@ -1,5 +1,6 @@
 <template>
   <view class="activity-detail" v-if="activity">
+    <image class="cover-image" v-if="activity.coverImage" :src="getImageUrl(activity.coverImage)" mode="aspectFill"></image>
     <view class="header">
       <text class="title">{{ activity.title }}</text>
       <text class="status-tag">{{ statusText(activity.status) }}</text>
@@ -31,6 +32,16 @@
     <view class="section">
       <text class="section-title">活动详情</text>
       <text class="desc">{{ activity.description }}</text>
+      <view class="image-gallery" v-if="activity.images && activity.images.length > 0">
+        <image
+          v-for="(img, index) in activity.images"
+          :key="index"
+          :src="getImageUrl(img)"
+          mode="widthFix"
+          class="gallery-image"
+          @click="previewImage(index)"
+        ></image>
+      </view>
     </view>
 
     <view class="section" v-if="registrations.length > 0">
@@ -121,6 +132,18 @@ export default {
     if (options.id) this.loadDetail(options.id);
   },
   methods: {
+    getImageUrl(path) {
+      if (!path) return '';
+      if (path.indexOf('http') === 0) return path;
+      return 'http://127.0.0.1:3000' + path;
+    },
+    previewImage(index) {
+      var self = this;
+      var urls = (self.activity.images || []).map(function(img) {
+        return self.getImageUrl(img);
+      });
+      uni.previewImage({ urls: urls, current: index });
+    },
     getRegUserName(r) {
       if (r.user && r.user.nickname) return r.user.nickname;
       return '未知';
@@ -218,6 +241,7 @@ export default {
 
 <style scoped>
 .activity-detail { padding-bottom: 120rpx; }
+.cover-image { width: 100%; height: 360rpx; display: block; }
 .header { background: linear-gradient(135deg, #4CAF50, #66BB6A); padding: 32rpx; color: #fff; }
 .title { font-size: 36rpx; font-weight: bold; display: block; }
 .status-tag { font-size: 24rpx; padding: 4rpx 16rpx; border-radius: 20rpx; margin-top: 12rpx; display: inline-block; background: rgba(255,255,255,0.3); }
@@ -230,6 +254,8 @@ export default {
 .section { margin: 20rpx; background: #fff; border-radius: 16rpx; padding: 24rpx; }
 .section-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; display: block; }
 .desc { font-size: 28rpx; color: #666; line-height: 1.8; display: block; }
+.image-gallery { margin-top: 20rpx; display: flex; flex-wrap: wrap; }
+.gallery-image { width: 31%; margin: 0 1% 12rpx 1%; border-radius: 8rpx; }
 .reg-list { display: flex; flex-wrap: wrap; }
 .reg-item { display: flex; align-items: center; background: #f5f5f5; padding: 8rpx 16rpx; border-radius: 8rpx; margin: 0 12rpx 12rpx 0; }
 .reg-name { font-size: 24rpx; color: #333; margin-right: 8rpx; }

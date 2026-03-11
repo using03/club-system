@@ -15,7 +15,8 @@ export const clubApi = {
   getList: (params) => get('/clubs', params),
   getDetail: (id) => get(`/clubs/${id}`),
   create: (data) => post('/clubs', data),
-  update: (id, data) => put(`/clubs/${id}`, data)
+  update: (id, data) => put(`/clubs/${id}`, data),
+  getActivities: (id) => get(`/clubs/${id}/activities`)
 };
 
 export const memberApi = {
