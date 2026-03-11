@@ -10,7 +10,7 @@
     </view>
 
     <view class="section" v-if="club.announcement">
-      <text class="section-title">📢 公告</text>
+      <text class="section-title">公告</text>
       <text class="announcement">{{ club.announcement }}</text>
     </view>
 
@@ -22,9 +22,9 @@
     <view class="section">
       <text class="section-title">成员 ({{ club.members.length }})</text>
       <view class="member-list">
-        <view class="member-item" v-for="m in club.members" :key="m.user?._id">
-          <view class="member-avatar">{{ (m.user?.nickname || '?').charAt(0) }}</view>
-          <text class="member-name">{{ m.user?.nickname || '未知' }}</text>
+        <view class="member-item" v-for="(m, index) in club.members" :key="index">
+          <view class="member-avatar">{{ getMemberName(m).charAt(0) }}</view>
+          <text class="member-name">{{ getMemberName(m) }}</text>
           <text class="member-role">{{ roleText(m.role) }}</text>
         </view>
       </view>
@@ -52,29 +52,38 @@ export default {
   computed: {
     isMember() {
       if (!this.club || !this.currentUserId) return false;
-      return this.club.members.some(m => m.user?._id === this.currentUserId);
+      return this.club.members.some(function(m) {
+        return m.user && m.user._id === this.currentUserId;
+      }.bind(this));
     },
     isPresident() {
       if (!this.club || !this.currentUserId) return false;
-      return this.club.president?._id === this.currentUserId || this.club.president === this.currentUserId;
+      var p = this.club.president;
+      if (p && p._id) return p._id === this.currentUserId;
+      return p === this.currentUserId;
     }
   },
   onLoad(options) {
-    const userStr = uni.getStorageSync('userInfo');
+    var userStr = uni.getStorageSync('userInfo');
     if (userStr) {
       try { this.currentUserId = JSON.parse(userStr)._id; } catch(e) {}
     }
     if (options.id) this.loadClub(options.id);
   },
   methods: {
+    getMemberName(m) {
+      if (m.user && m.user.nickname) return m.user.nickname;
+      return '未知';
+    },
     async loadClub(id) {
       try {
-        const res = await clubApi.getDetail(id);
+        var res = await clubApi.getDetail(id);
         this.club = res.data.club;
       } catch(err) { console.error(err); }
     },
     roleText(role) {
-      return { president: '社长', vice_president: '副社长', member: '成员' }[role] || '成员';
+      var map = { president: '社长', vice_president: '副社长', member: '成员' };
+      return map[role] || '成员';
     },
     formatDate(d) {
       return d ? new Date(d).toLocaleDateString('zh-CN') : '';
@@ -109,8 +118,8 @@ export default {
 .section-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; display: block; }
 .announcement { font-size: 28rpx; color: #E65100; background: #FFF3E0; padding: 16rpx; border-radius: 8rpx; display: block; }
 .desc { font-size: 28rpx; color: #666; line-height: 1.6; display: block; }
-.member-list { display: flex; flex-wrap: wrap; gap: 16rpx; }
-.member-item { display: flex; align-items: center; background: #f5f5f5; border-radius: 8rpx; padding: 12rpx 16rpx; }
+.member-list { display: flex; flex-wrap: wrap; }
+.member-item { display: flex; align-items: center; background: #f5f5f5; border-radius: 8rpx; padding: 12rpx 16rpx; margin: 0 16rpx 16rpx 0; }
 .member-avatar { width: 48rpx; height: 48rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22rpx; margin-right: 8rpx; }
 .member-name { font-size: 24rpx; color: #333; }
 .member-role { font-size: 20rpx; color: #4CAF50; margin-left: 8rpx; }
