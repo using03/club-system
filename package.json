@@ -1,0 +1,15 @@
+{
+  "name": "club-system",
+  "version": "1.0.0",
+  "description": "基于 Uniapp 的校园社团活动管理系统",
+  "private": true,
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev:h5",
+    "dev": "npm run dev:server & npm run dev:client",
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "seed": "cd server && node seed.js",
+    "lint:server": "cd server && npx eslint .",
+    "test:server": "cd server && npx jest --passWithNoTests"
+  }
+}
