@@ -42,6 +42,10 @@
           @click="previewImage(index)"
         ></image>
       </view>
+      <view v-if="isOrganizer" class="upload-section">
+        <button class="btn-upload" @click="chooseAndUploadImages">上传活动图片</button>
+        <text class="upload-hint">支持 jpg/png/gif，最多9张</text>
+      </view>
     </view>
 
     <view class="section" v-if="registrations.length > 0">
@@ -75,7 +79,10 @@
 
     <view class="feedback-modal" v-if="showFeedback" @click="closeFeedbackMaybe">
       <view class="modal-content" @click.stop="">
-        <text class="modal-title">活动评价</text>
+        <view class="modal-header">
+          <text class="modal-title">活动评价</text>
+          <text class="modal-close" @click="closeFeedback">✕</text>
+        </view>
         <view class="star-rating">
           <text
             v-for="i in 5" :key="i"
@@ -85,13 +92,14 @@
         </view>
         <textarea v-model="feedbackForm.comment" placeholder="请输入评价内容" class="comment-input" />
         <button class="btn-submit" @click="submitFeedback">提交评价</button>
+        <button class="btn-cancel" @click="closeFeedback">取消</button>
       </view>
     </view>
   </view>
 </template>
 
 <script>
-import { activityApi, checkinApi, feedbackApi } from '@/api/index';
+import { activityApi, checkinApi, feedbackApi } from '../../api/index';
 
 export default {
   data() {
@@ -122,6 +130,12 @@ export default {
     },
     canFeedback() {
       return this.activity && this.myCheckIn;
+    },
+    isOrganizer() {
+      if (!this.activity || !this.currentUserId) return false;
+      var org = this.activity.organizer;
+      if (org && org._id) return org._id === this.currentUserId;
+      return org === this.currentUserId;
     }
   },
   onLoad(options) {
@@ -164,6 +178,9 @@ export default {
     },
     openFeedback() {
       this.showFeedback = true;
+    },
+    closeFeedback() {
+      this.showFeedback = false;
     },
     closeFeedbackMaybe(e) {
       this.showFeedback = false;
@@ -227,13 +244,52 @@ export default {
         this.myCheckIn = true;
       } catch(err) { console.error(err); }
     },
+    chooseAndUploadImages() {
+      var self = this;
+      uni.chooseImage({
+        count: 9,
+        success: function(res) {
+          var files = res.tempFilePaths;
+          var uploaded = 0;
+          var newImages = self.activity.images ? self.activity.images.slice() : [];
+          var token = uni.getStorageSync('token');
+          for (var i = 0; i < files.length; i++) {
+            uni.uploadFile({
+              url: 'http://127.0.0.1:3000/api/upload',
+              filePath: files[i],
+              name: 'file',
+              header: { 'Authorization': 'Bearer ' + token },
+              success: function(uploadRes) {
+                var data = JSON.parse(uploadRes.data);
+                if (data.code === 0) {
+                  newImages.push(data.data.url);
+                }
+                uploaded++;
+                if (uploaded === files.length) {
+                  activityApi.update(self.activity._id, { images: newImages }).then(function() {
+                    uni.showToast({ title: '上传成功', icon: 'success' });
+                    self.loadDetail(self.activity._id);
+                  });
+                }
+              },
+              fail: function() {
+                uploaded++;
+              }
+            });
+          }
+        }
+      });
+    },
     async submitFeedback() {
       try {
         await feedbackApi.submit(this.activity._id, this.feedbackForm);
         uni.showToast({ title: '评价成功', icon: 'success' });
         this.showFeedback = false;
         this.loadDetail(this.activity._id);
-      } catch(err) { console.error(err); }
+      } catch(err) {
+        this.showFeedback = false;
+        console.error(err);
+      }
     }
   }
 };
@@ -256,6 +312,9 @@ export default {
 .desc { font-size: 28rpx; color: #666; line-height: 1.8; display: block; }
 .image-gallery { margin-top: 20rpx; display: flex; flex-wrap: wrap; }
 .gallery-image { width: 31%; margin: 0 1% 12rpx 1%; border-radius: 8rpx; }
+.upload-section { margin-top: 20rpx; }
+.btn-upload { background: #E8F5E9; color: #4CAF50; border: 2rpx dashed #4CAF50; border-radius: 12rpx; height: 72rpx; line-height: 72rpx; font-size: 28rpx; }
+.upload-hint { font-size: 22rpx; color: #999; display: block; text-align: center; margin-top: 8rpx; }
 .reg-list { display: flex; flex-wrap: wrap; }
 .reg-item { display: flex; align-items: center; background: #f5f5f5; padding: 8rpx 16rpx; border-radius: 8rpx; margin: 0 12rpx 12rpx 0; }
 .reg-name { font-size: 24rpx; color: #333; margin-right: 8rpx; }
@@ -276,10 +335,13 @@ export default {
 .btn-feedback { background: #ff9800; color: #fff; }
 .feedback-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
 .modal-content { width: 80%; background: #fff; border-radius: 16rpx; padding: 32rpx; }
-.modal-title { font-size: 32rpx; font-weight: bold; color: #333; display: block; text-align: center; margin-bottom: 24rpx; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; }
+.modal-title { font-size: 32rpx; font-weight: bold; color: #333; }
+.modal-close { font-size: 36rpx; color: #999; padding: 0 10rpx; }
 .star-rating { display: flex; justify-content: center; margin-bottom: 24rpx; }
 .star { font-size: 48rpx; color: #ddd; padding: 0 8rpx; }
 .star.active { color: #ff9800; }
 .comment-input { width: 100%; height: 200rpx; background: #f5f5f5; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; box-sizing: border-box; }
 .btn-submit { width: 100%; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 24rpx; }
+.btn-cancel { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 16rpx; }
 </style>

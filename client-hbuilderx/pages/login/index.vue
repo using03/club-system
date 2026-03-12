@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { authApi } from '@/api/index';
+import { authApi } from '../../api/index';
 
 export default {
   data() {

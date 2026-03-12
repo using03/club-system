@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { activityApi } from '@/api/index';
+import { activityApi } from '../../api/index';
 
 export default {
   data() {

@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { clubApi, activityApi } from '@/api/index';
+import { clubApi, activityApi } from '../../api/index';
 
 export default {
   data() {

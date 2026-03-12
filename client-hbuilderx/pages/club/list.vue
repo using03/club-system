@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { clubApi } from '@/api/index';
+import { clubApi } from '../../api/index';
 
 export default {
   data() {
