@@ -19,7 +19,7 @@ export const clubApi = {
   getActivities: (id) => get(`/clubs/${id}/activities`),
   getPending: () => get('/clubs/admin/pending'),
   approve: (id) => put(`/clubs/${id}/approve`),
-  reject: (id) => put(`/clubs/${id}/reject`)
+  reject: (id, data) => put(`/clubs/${id}/reject`, data)
 };
 
 export const memberApi = {

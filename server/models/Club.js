@@ -59,7 +59,11 @@ const clubSchema = new mongoose.Schema({
   },
   tags: [{
     type: String
-  }]
+  }],
+  rejectReason: {
+    type: String,
+    default: ''
+  }
 }, {
   timestamps: true
 });

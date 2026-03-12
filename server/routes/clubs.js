@@ -89,6 +89,12 @@ router.post('/', auth, [
       status: 'pending'
     });
 
+    var User = require('../models/User');
+    var admins = await User.find({ role: 'admin' }).select('_id');
+    for (var i = 0; i < admins.length; i++) {
+      await createNotification(admins[i]._id, 'club_pending', '新社团待审核', req.user.nickname + ' 申请创建社团「' + name + '」，请前往审核。', club._id.toString());
+    }
+
     return success(res, { club }, '社团创建申请已提交，等待管理员审核', 201);
   } catch (err) {
     return error(res, err.message, 500);
@@ -164,13 +170,18 @@ router.put('/:id/reject', auth, async (req, res) => {
     if (req.user.role !== 'admin') {
       return error(res, '需要管理员权限', 403);
     }
+    var reason = (req.body.reason || '').trim();
+    if (!reason) {
+      return error(res, '请填写拒绝原因');
+    }
     var club = await Club.findById(req.params.id);
     if (!club) return error(res, '社团不存在', 404);
 
     club.status = 'inactive';
+    club.rejectReason = reason;
     await club.save();
 
-    await createNotification(club.president, 'club_rejected', '社团审核未通过', '你申请创建的社团「' + club.name + '」未通过审核。', club._id.toString());
+    await createNotification(club.president, 'club_rejected', '社团审核未通过', '你申请创建的社团「' + club.name + '」未通过审核。原因：' + reason, club._id.toString());
 
     return success(res, null, '社团已拒绝');
   } catch (err) {

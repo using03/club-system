@@ -24,6 +24,18 @@
       <text class="empty-text">你还没有加入任何社团</text>
       <button class="btn-explore" @click="goExplore">去看看</button>
     </view>
+    <view class="reject-modal" v-if="showRejectInfo && selectedClub" @click="closeRejectInfo">
+      <view class="modal-content" @click.stop="">
+        <text class="modal-title">社团审核未通过</text>
+        <text class="reject-club-name">{{ selectedClub.name }}</text>
+        <view class="reject-reason-box">
+          <text class="reject-label">拒绝原因：</text>
+          <text class="reject-reason">{{ selectedClub.rejectReason || '未提供原因' }}</text>
+        </view>
+        <button class="btn-resubmit" @click="resubmitClub">修改并重新提交</button>
+        <button class="btn-close" @click="closeRejectInfo">关闭</button>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -34,7 +46,9 @@ export default {
   data() {
     return {
       clubs: [],
-      currentUserId: ''
+      currentUserId: '',
+      showRejectInfo: false,
+      selectedClub: null
     };
   },
   onShow() {
@@ -70,10 +84,22 @@ export default {
     },
     goDetail(club) {
       if (club.status === 'inactive') {
-        uni.showToast({ title: '该社团未通过审核', icon: 'none' });
+        this.selectedClub = club;
+        this.showRejectInfo = true;
+        return;
+      }
+      if (club.status === 'pending') {
+        uni.showToast({ title: '社团审核中，请耐心等待', icon: 'none' });
         return;
       }
       uni.navigateTo({ url: '/pages/club/detail?id=' + club._id });
+    },
+    closeRejectInfo() {
+      this.showRejectInfo = false;
+    },
+    resubmitClub() {
+      this.showRejectInfo = false;
+      uni.navigateTo({ url: '/pages/club/edit?id=' + this.selectedClub._id + '&resubmit=1' });
     },
     goExplore() {
       uni.navigateTo({ url: '/pages/club/list' });
@@ -102,4 +128,13 @@ export default {
 .empty-icon { font-size: 100rpx; }
 .empty-text { font-size: 28rpx; color: #999; margin-top: 20rpx; }
 .btn-explore { margin-top: 40rpx; background: #4CAF50; color: #fff; border: none; border-radius: 40rpx; padding: 0 60rpx; height: 72rpx; line-height: 72rpx; font-size: 28rpx; }
+.reject-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
+.modal-content { width: 80%; background: #fff; border-radius: 16rpx; padding: 32rpx; }
+.modal-title { font-size: 32rpx; font-weight: bold; color: #f44336; display: block; margin-bottom: 16rpx; }
+.reject-club-name { font-size: 28rpx; color: #333; font-weight: bold; display: block; margin-bottom: 16rpx; }
+.reject-reason-box { background: #FFF3E0; border-radius: 12rpx; padding: 20rpx; margin-bottom: 24rpx; }
+.reject-label { font-size: 24rpx; color: #999; display: block; margin-bottom: 8rpx; }
+.reject-reason { font-size: 28rpx; color: #E65100; display: block; line-height: 1.6; }
+.btn-resubmit { width: 100%; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; }
+.btn-close { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 12rpx; }
 </style>

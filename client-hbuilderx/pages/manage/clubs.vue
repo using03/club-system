@@ -13,12 +13,21 @@
         </view>
         <view class="action-row">
           <button class="btn-approve" @click="handleApprove(club._id)">通过</button>
-          <button class="btn-reject" @click="handleReject(club._id)">拒绝</button>
+          <button class="btn-reject" @click="openReject(club._id)">拒绝</button>
         </view>
       </view>
     </view>
     <view v-else class="empty">
       <text class="empty-text">暂无待审核的社团</text>
+    </view>
+
+    <view class="reject-modal" v-if="showReject" @click="showReject = false">
+      <view class="modal-content" @click.stop="">
+        <text class="modal-title">拒绝原因</text>
+        <textarea v-model="rejectReason" placeholder="请输入拒绝原因（必填）" class="reason-input" />
+        <button class="btn-confirm-reject" @click="confirmReject">确认拒绝</button>
+        <button class="btn-cancel" @click="showReject = false">取消</button>
+      </view>
     </view>
   </view>
 </template>
@@ -29,7 +38,10 @@ import { clubApi } from '../../api/index';
 export default {
   data() {
     return {
-      clubs: []
+      clubs: [],
+      showReject: false,
+      rejectClubId: '',
+      rejectReason: ''
     };
   },
   onShow() {
@@ -49,20 +61,22 @@ export default {
         this.loadPending();
       } catch(err) { console.error(err); }
     },
-    async handleReject(id) {
-      var self = this;
-      uni.showModal({
-        title: '确认拒绝',
-        content: '确定要拒绝该社团申请吗？',
-        success: function(res) {
-          if (res.confirm) {
-            clubApi.reject(id).then(function() {
-              uni.showToast({ title: '已拒绝', icon: 'success' });
-              self.loadPending();
-            });
-          }
-        }
-      });
+    openReject(id) {
+      this.rejectClubId = id;
+      this.rejectReason = '';
+      this.showReject = true;
+    },
+    async confirmReject() {
+      if (!this.rejectReason.trim()) {
+        uni.showToast({ title: '请填写拒绝原因', icon: 'none' });
+        return;
+      }
+      try {
+        await clubApi.reject(this.rejectClubId, { reason: this.rejectReason });
+        uni.showToast({ title: '已拒绝', icon: 'success' });
+        this.showReject = false;
+        this.loadPending();
+      } catch(err) { console.error(err); }
     }
   }
 };
@@ -84,4 +98,10 @@ export default {
 .btn-reject { background: #f5f5f5; color: #f44336; }
 .empty { padding: 100rpx 0; text-align: center; }
 .empty-text { font-size: 28rpx; color: #999; }
+.reject-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
+.modal-content { width: 80%; background: #fff; border-radius: 16rpx; padding: 32rpx; }
+.modal-title { font-size: 32rpx; font-weight: bold; color: #333; display: block; margin-bottom: 20rpx; }
+.reason-input { width: 100%; height: 200rpx; background: #f5f5f5; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; box-sizing: border-box; }
+.btn-confirm-reject { width: 100%; background: #f44336; color: #fff; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 20rpx; }
+.btn-cancel { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 12rpx; }
 </style>

@@ -43,7 +43,7 @@
         </picker>
       </view>
     </view>
-    <button class="btn-submit" @click="handleSubmit">保存修改</button>
+    <button class="btn-submit" @click="handleSubmit">{{ isResubmit ? '重新提交审核' : '保存修改' }}</button>
   </view>
 </template>
 
@@ -54,6 +54,7 @@ export default {
   data() {
     return {
       clubId: '',
+      isResubmit: false,
       form: { name: '', description: '', category: '其他', announcement: '', logo: '', tags: [], status: 'active' },
       tagsStr: '',
       categories: ['学术科技', '文化艺术', '体育运动', '志愿公益', '创新创业', '其他'],
@@ -66,6 +67,7 @@ export default {
   onLoad(options) {
     if (options.id) {
       this.clubId = options.id;
+      this.isResubmit = options.resubmit === '1';
       this.loadClub(options.id);
     }
   },
@@ -125,11 +127,12 @@ export default {
         var submitData = {
           name: this.form.name, description: this.form.description,
           category: this.form.category, announcement: this.form.announcement,
-          logo: this.form.logo, status: this.form.status
+          logo: this.form.logo, status: this.isResubmit ? 'pending' : this.form.status
         };
         if (this.tagsStr) submitData.tags = this.tagsStr.split(',').map(function(t) { return t.trim(); });
         await clubApi.update(this.clubId, submitData);
-        uni.showToast({ title: '保存成功', icon: 'success' });
+        var msg = this.isResubmit ? '已重新提交审核' : '保存成功';
+        uni.showToast({ title: msg, icon: 'success' });
         setTimeout(function() { uni.navigateBack(); }, 1000);
       } catch(err) { console.error(err); }
     }

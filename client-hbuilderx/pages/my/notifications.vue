@@ -47,6 +47,7 @@ export default {
     },
     getIcon(type) {
       var map = {
+        club_pending: '📋',
         club_approved: '✅', club_rejected: '❌',
         registration_approved: '✅', registration_rejected: '❌',
         member_joined: '👤', activity_reminder: '⏰'
@@ -71,10 +72,12 @@ export default {
         this.unread = Math.max(0, this.unread - 1);
       }
       if (n.relatedId) {
-        if (n.type === 'club_approved' || n.type === 'club_rejected') {
-          if (n.type === 'club_approved') {
-            uni.navigateTo({ url: '/pages/club/detail?id=' + n.relatedId });
-          }
+        if (n.type === 'club_pending') {
+          uni.navigateTo({ url: '/pages/manage/clubs' });
+        } else if (n.type === 'club_approved') {
+          uni.navigateTo({ url: '/pages/club/detail?id=' + n.relatedId });
+        } else if (n.type === 'club_rejected') {
+          uni.navigateTo({ url: '/pages/my/clubs' });
         } else if (n.type === 'registration_approved' || n.type === 'registration_rejected' || n.type === 'activity_reminder') {
           uni.navigateTo({ url: '/pages/activity/detail?id=' + n.relatedId });
         } else if (n.type === 'member_joined') {
@@ -105,6 +108,7 @@ export default {
 .noti-icon { width: 64rpx; height: 64rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28rpx; flex-shrink: 0; margin-right: 16rpx; background: #f5f5f5; }
 .noti-icon.club_approved, .noti-icon.registration_approved { background: #E8F5E9; }
 .noti-icon.club_rejected, .noti-icon.registration_rejected { background: #FFEBEE; }
+.noti-icon.club_pending { background: #FFF3E0; }
 .noti-icon.member_joined { background: #E3F2FD; }
 .noti-body { flex: 1; overflow: hidden; }
 .noti-title { font-size: 28rpx; font-weight: bold; color: #333; display: block; }
