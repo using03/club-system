@@ -5,6 +5,7 @@ const Club = require('../models/Club');
 const Registration = require('../models/Registration');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
+const { createNotification } = require('../utils/notify');
 
 const router = express.Router();
 
@@ -184,6 +185,9 @@ router.put('/:activityId/registrations/:regId', auth, async (req, res) => {
     if (status === 'approved') {
       activity.currentParticipants += 1;
       await activity.save();
+      await createNotification(registration.user._id || registration.user, 'registration_approved', '报名已通过', '你报名的活动「' + activity.title + '」已通过审核，记得准时参加！', activity._id.toString());
+    } else {
+      await createNotification(registration.user._id || registration.user, 'registration_rejected', '报名未通过', '你报名的活动「' + activity.title + '」未通过审核。', activity._id.toString());
     }
 
     return success(res, { registration }, '审核完成');

@@ -1,11 +1,15 @@
 <template>
   <view class="my-clubs-page">
     <view v-if="clubs.length > 0" class="list">
-      <view class="club-item" v-for="(club, index) in clubs" :key="index" @click="goDetail(club._id)">
+      <view class="club-item" v-for="(club, index) in clubs" :key="index" @click="goDetail(club)">
         <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
-        <view v-else class="club-avatar">{{ club.name.charAt(0) }}</view>
+        <view v-else class="club-avatar" :class="club.status">{{ club.name.charAt(0) }}</view>
         <view class="club-info">
-          <text class="club-name">{{ club.name }}</text>
+          <view class="name-row">
+            <text class="club-name">{{ club.name }}</text>
+            <text class="status-badge pending" v-if="club.status === 'pending'">审核中</text>
+            <text class="status-badge rejected" v-if="club.status === 'inactive'">已拒绝</text>
+          </view>
           <text class="club-desc">{{ club.description || '暂无简介' }}</text>
           <view class="club-meta">
             <text class="meta">{{ club.category }}</text>
@@ -45,9 +49,7 @@ export default {
       try {
         var res = await authApi.getMyClubs();
         this.clubs = res.data.clubs || [];
-      } catch(err) {
-        console.error(err);
-      }
+      } catch(err) { console.error(err); }
     },
     getLogoUrl(path) {
       if (!path) return '';
@@ -66,8 +68,12 @@ export default {
       }
       return '成员';
     },
-    goDetail(id) {
-      uni.navigateTo({ url: '/pages/club/detail?id=' + id });
+    goDetail(club) {
+      if (club.status === 'inactive') {
+        uni.showToast({ title: '该社团未通过审核', icon: 'none' });
+        return;
+      }
+      uni.navigateTo({ url: '/pages/club/detail?id=' + club._id });
     },
     goExplore() {
       uni.navigateTo({ url: '/pages/club/list' });
@@ -80,9 +86,15 @@ export default {
 .list { padding: 20rpx; }
 .club-item { display: flex; background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06); }
 .club-avatar { width: 96rpx; height: 96rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 36rpx; font-weight: bold; flex-shrink: 0; margin-right: 20rpx; }
+.club-avatar.pending { background: #ff9800; }
+.club-avatar.inactive { background: #999; }
 .club-logo { width: 96rpx; height: 96rpx; border-radius: 50%; flex-shrink: 0; margin-right: 20rpx; }
 .club-info { flex: 1; overflow: hidden; }
-.club-name { font-size: 30rpx; font-weight: bold; color: #333; display: block; }
+.name-row { display: flex; align-items: center; }
+.club-name { font-size: 30rpx; font-weight: bold; color: #333; }
+.status-badge { font-size: 20rpx; padding: 2rpx 14rpx; border-radius: 12rpx; margin-left: 12rpx; flex-shrink: 0; }
+.status-badge.pending { background: #FFF3E0; color: #E65100; }
+.status-badge.rejected { background: #FFEBEE; color: #f44336; }
 .club-desc { font-size: 24rpx; color: #666; margin-top: 8rpx; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .club-meta { margin-top: 8rpx; display: flex; }
 .meta { font-size: 22rpx; color: #999; margin-right: 16rpx; }

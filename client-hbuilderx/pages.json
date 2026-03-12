@@ -107,6 +107,12 @@
       "style": {
         "navigationBarTitleText": "社团审核"
       }
+    },
+    {
+      "path": "pages/my/notifications",
+      "style": {
+        "navigationBarTitleText": "消息中心"
+      }
     }
   ],
   "globalStyle": {

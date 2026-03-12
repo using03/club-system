@@ -12,6 +12,7 @@ const activityRoutes = require('./routes/activities');
 const checkinRoutes = require('./routes/checkin');
 const feedbackRoutes = require('./routes/feedback');
 const uploadRoutes = require('./routes/upload');
+const notificationRoutes = require('./routes/notifications');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/activities', activityRoutes);
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ code: 0, message: '服务运行正常', data: { timestamp: new Date().toISOString() } });

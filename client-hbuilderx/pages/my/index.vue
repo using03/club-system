@@ -16,6 +16,12 @@
     </view>
 
     <view class="menu-section">
+      <view class="menu-item" @click="goNotifications">
+        <text class="menu-icon">🔔</text>
+        <text class="menu-text">消息中心</text>
+        <text class="unread-badge" v-if="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</text>
+        <text class="menu-arrow">></text>
+      </view>
       <view class="menu-item" @click="goMyClubs">
         <text class="menu-icon">🏫</text>
         <text class="menu-text">我的社团</text>
@@ -57,18 +63,23 @@
 </template>
 
 <script>
+import { notificationApi } from '../../api/index';
+
 export default {
   data() {
     return {
-      userInfo: null
+      userInfo: null,
+      unreadCount: 0
     };
   },
   onShow() {
     var str = uni.getStorageSync('userInfo');
     if (str) {
       try { this.userInfo = JSON.parse(str); } catch(e) {}
+      this.loadUnread();
     } else {
       this.userInfo = null;
+      this.unreadCount = 0;
     }
   },
   methods: {
@@ -88,6 +99,15 @@ export default {
     },
     goLogin() {
       uni.navigateTo({ url: '/pages/login/index' });
+    },
+    async loadUnread() {
+      try {
+        var res = await notificationApi.getUnreadCount();
+        this.unreadCount = res.data.count || 0;
+      } catch(err) { this.unreadCount = 0; }
+    },
+    goNotifications() {
+      if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/notifications' });
     },
     goMyClubs() {
       if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/clubs' });
@@ -127,5 +147,6 @@ export default {
 .menu-item:last-child { border-bottom: none; }
 .menu-icon { font-size: 36rpx; margin-right: 16rpx; }
 .menu-text { flex: 1; font-size: 30rpx; color: #333; }
+.unread-badge { background: #f44336; color: #fff; font-size: 20rpx; min-width: 32rpx; height: 32rpx; line-height: 32rpx; text-align: center; border-radius: 16rpx; padding: 0 8rpx; margin-right: 8rpx; }
 .menu-arrow { font-size: 28rpx; color: #ccc; }
 </style>

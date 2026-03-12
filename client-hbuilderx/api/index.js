@@ -48,6 +48,13 @@ export const checkinApi = {
   getStatus: (activityId) => get(`/checkin/${activityId}/status`)
 };
 
+export const notificationApi = {
+  getList: (params) => get('/notifications', params),
+  getUnreadCount: () => get('/notifications/unread-count'),
+  markRead: (id) => put(`/notifications/${id}/read`),
+  markAllRead: () => put('/notifications/read-all')
+};
+
 export const feedbackApi = {
   submit: (activityId, data) => post(`/feedback/${activityId}`, data),
   getList: (activityId, params) => get(`/feedback/${activityId}`, params)

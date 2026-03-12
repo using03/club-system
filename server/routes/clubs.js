@@ -4,6 +4,7 @@ const Club = require('../models/Club');
 const Activity = require('../models/Activity');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
+const { createNotification } = require('../utils/notify');
 
 const router = express.Router();
 
@@ -150,6 +151,8 @@ router.put('/:id/approve', auth, async (req, res) => {
       await president.save();
     }
 
+    await createNotification(club.president, 'club_approved', '社团审核通过', '你申请创建的社团「' + club.name + '」已通过审核，现在可以开始运营了！', club._id.toString());
+
     return success(res, { club: club }, '社团审核通过');
   } catch (err) {
     return error(res, err.message, 500);
@@ -166,6 +169,8 @@ router.put('/:id/reject', auth, async (req, res) => {
 
     club.status = 'inactive';
     await club.save();
+
+    await createNotification(club.president, 'club_rejected', '社团审核未通过', '你申请创建的社团「' + club.name + '」未通过审核。', club._id.toString());
 
     return success(res, null, '社团已拒绝');
   } catch (err) {

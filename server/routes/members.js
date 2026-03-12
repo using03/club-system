@@ -2,6 +2,7 @@ const express = require('express');
 const Club = require('../models/Club');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
+const { createNotification } = require('../utils/notify');
 
 const router = express.Router();
 
@@ -16,6 +17,8 @@ router.post('/:clubId/join', auth, async (req, res) => {
     club.members.push({ user: req.userId, role: 'member' });
     club.memberCount = club.members.length;
     await club.save();
+
+    await createNotification(club.president, 'member_joined', '新成员加入', req.user.nickname + ' 加入了社团「' + club.name + '」', club._id.toString());
 
     return success(res, { club }, '加入社团成功');
   } catch (err) {
