@@ -38,6 +38,14 @@
       </view>
     </view>
 
+    <view class="menu-section" v-if="userInfo && userInfo.role === 'admin'">
+      <view class="menu-item" @click="goReviewClubs">
+        <text class="menu-icon">🔍</text>
+        <text class="menu-text">社团审核</text>
+        <text class="menu-arrow">></text>
+      </view>
+    </view>
+
     <view class="menu-section">
       <view class="menu-item" v-if="userInfo" @click="logout">
         <text class="menu-icon">🚪</text>
@@ -92,6 +100,9 @@ export default {
     },
     goMyCheckins() {
       if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/checkins' });
+    },
+    goReviewClubs() {
+      uni.navigateTo({ url: '/pages/manage/clubs' });
     },
     logout() {
       uni.removeStorageSync('token');

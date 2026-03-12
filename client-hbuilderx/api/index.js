@@ -16,7 +16,10 @@ export const clubApi = {
   getDetail: (id) => get(`/clubs/${id}`),
   create: (data) => post('/clubs', data),
   update: (id, data) => put(`/clubs/${id}`, data),
-  getActivities: (id) => get(`/clubs/${id}/activities`)
+  getActivities: (id) => get(`/clubs/${id}/activities`),
+  getPending: () => get('/clubs/admin/pending'),
+  approve: (id) => put(`/clubs/${id}/approve`),
+  reject: (id) => put(`/clubs/${id}/reject`)
 };
 
 export const memberApi = {

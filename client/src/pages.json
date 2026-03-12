@@ -101,6 +101,12 @@
       "style": {
         "navigationBarTitleText": "签到记录管理"
       }
+    },
+    {
+      "path": "pages/manage/clubs",
+      "style": {
+        "navigationBarTitleText": "社团审核"
+      }
     }
   ],
   "globalStyle": {

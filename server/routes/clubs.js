@@ -34,6 +34,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/admin/pending', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return error(res, '需要管理员权限', 403);
+    }
+    var clubs = await Club.find({ status: 'pending' })
+      .populate('president', 'nickname avatar studentId')
+      .sort({ createdAt: -1 });
+    return success(res, { clubs: clubs, total: clubs.length });
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const club = await Club.findById(req.params.id)
@@ -66,17 +80,15 @@ router.post('/', auth, [
       description: description || '',
       category: category || '其他',
       logo: logo || '',
-      foundedAt: foundedAt || Date.now(),
+      foundedAt: Date.now(),
       tags: tags || [],
       president: req.userId,
       members: [{ user: req.userId, role: 'president' }],
-      memberCount: 1
+      memberCount: 1,
+      status: 'pending'
     });
 
-    req.user.role = 'club_admin';
-    await req.user.save();
-
-    return success(res, { club }, '社团创建成功', 201);
+    return success(res, { club }, '社团创建申请已提交，等待管理员审核', 201);
   } catch (err) {
     return error(res, err.message, 500);
   }
@@ -116,6 +128,46 @@ router.get('/:id/activities', async (req, res) => {
       .populate('organizer', 'nickname avatar')
       .sort({ startTime: -1 });
     return success(res, { activities: activities, total: activities.length });
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.put('/:id/approve', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return error(res, '需要管理员权限', 403);
+    }
+    var club = await Club.findById(req.params.id);
+    if (!club) return error(res, '社团不存在', 404);
+
+    club.status = 'active';
+    await club.save();
+
+    var president = await require('../models/User').findById(club.president);
+    if (president && president.role === 'student') {
+      president.role = 'club_admin';
+      await president.save();
+    }
+
+    return success(res, { club: club }, '社团审核通过');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.put('/:id/reject', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return error(res, '需要管理员权限', 403);
+    }
+    var club = await Club.findById(req.params.id);
+    if (!club) return error(res, '社团不存在', 404);
+
+    club.status = 'inactive';
+    await club.save();
+
+    return success(res, null, '社团已拒绝');
   } catch (err) {
     return error(res, err.message, 500);
   }

@@ -16,12 +16,6 @@
         <textarea v-model="form.description" placeholder="请输入社团简介" class="textarea" />
       </view>
       <view class="form-group">
-        <text class="label">成立时间</text>
-        <picker mode="date" :value="form.foundedAt" @change="onDateChange">
-          <view class="picker-value">{{ form.foundedAt || '请选择成立时间' }}</view>
-        </picker>
-      </view>
-      <view class="form-group">
         <text class="label">社团Logo</text>
         <view class="logo-upload" @click="chooseLogo">
           <image v-if="form.logo" :src="getFullUrl(form.logo)" class="logo-preview" mode="aspectFill"></image>
@@ -43,7 +37,7 @@ import { clubApi } from '../../api/index';
 export default {
   data() {
     return {
-      form: { name: '', description: '', category: '其他', foundedAt: '', logo: '', tags: [] },
+      form: { name: '', description: '', category: '其他', logo: '', tags: [] },
       tagsStr: '',
       categories: ['学术科技', '文化艺术', '体育运动', '志愿公益', '创新创业', '其他'],
       categoryIndex: 5
@@ -53,9 +47,6 @@ export default {
     onCategoryChange(e) {
       this.categoryIndex = e.detail.value;
       this.form.category = this.categories[this.categoryIndex];
-    },
-    onDateChange(e) {
-      this.form.foundedAt = e.detail.value;
     },
     getFullUrl(path) {
       if (!path) return '';
@@ -95,7 +86,6 @@ export default {
           category: this.form.category,
           logo: this.form.logo
         };
-        if (this.form.foundedAt) submitData.foundedAt = this.form.foundedAt;
         if (this.tagsStr) submitData.tags = this.tagsStr.split(',').map(function(t) { return t.trim(); });
         await clubApi.create(submitData);
         uni.showToast({ title: '创建成功', icon: 'success' });
