@@ -24,6 +24,9 @@
             <text class="meta">{{ club.memberCount }}人</text>
             <text class="meta">成立于 {{ formatDate(club.foundedAt) }}</text>
           </view>
+          <view class="club-tags" v-if="club.tags && club.tags.length > 0">
+            <text class="club-tag" v-for="(t, i) in club.tags" :key="i">{{ t }}</text>
+          </view>
         </view>
       </view>
       <view v-if="clubs.length === 0" class="empty">暂无社团</view>
@@ -97,5 +100,7 @@ export default {
 .club-desc { font-size: 24rpx; color: #666; margin-top: 8rpx; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .club-meta { margin-top: 8rpx; display: flex; gap: 16rpx; }
 .meta { font-size: 22rpx; color: #999; }
+.club-tags { margin-top: 8rpx; display: flex; flex-wrap: wrap; }
+.club-tag { font-size: 20rpx; color: #4CAF50; background: #E8F5E9; padding: 4rpx 16rpx; border-radius: 20rpx; margin: 0 8rpx 4rpx 0; }
 .empty { text-align: center; color: #999; padding: 60rpx; }
 </style>

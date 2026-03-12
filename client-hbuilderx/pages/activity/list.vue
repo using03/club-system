@@ -22,6 +22,9 @@
           <text class="meta">📅 {{ formatDate(act.startTime) }}</text>
           <text class="meta" v-if="act.club">🏫 {{ act.club.name }}</text>
         </view>
+        <view class="card-tags" v-if="act.tags && act.tags.length > 0">
+          <text class="act-tag" v-for="(t, i) in act.tags" :key="i">{{ t }}</text>
+        </view>
         <view class="card-footer">
           <text class="participants">
             {{ act.currentParticipants }}/{{ act.maxParticipants || '不限' }} 人报名
@@ -100,6 +103,8 @@ export default {
 .activity-desc { font-size: 26rpx; color: #666; margin-top: 12rpx; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card-meta { margin-top: 12rpx; display: flex; flex-wrap: wrap; gap: 12rpx; }
 .meta { font-size: 22rpx; color: #999; }
+.card-tags { margin-top: 10rpx; display: flex; flex-wrap: wrap; }
+.act-tag { font-size: 20rpx; color: #E65100; background: #FFF3E0; padding: 4rpx 16rpx; border-radius: 20rpx; margin: 0 8rpx 8rpx 0; }
 .card-footer { margin-top: 12rpx; display: flex; justify-content: space-between; align-items: center; }
 .participants { font-size: 24rpx; color: #4CAF50; }
 .approval { font-size: 20rpx; color: #ff9800; background: #FFF3E0; padding: 4rpx 12rpx; border-radius: 8rpx; }

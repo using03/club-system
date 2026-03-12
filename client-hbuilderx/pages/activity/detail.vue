@@ -32,15 +32,14 @@
     <view class="section">
       <text class="section-title">活动详情</text>
       <text class="desc">{{ activity.description }}</text>
+      <view class="tags-row" v-if="activity.tags && activity.tags.length > 0">
+        <text class="tag" v-for="(t, i) in activity.tags" :key="i">{{ t }}</text>
+      </view>
       <view class="image-gallery" v-if="activity.images && activity.images.length > 0">
-        <image
-          v-for="(img, index) in activity.images"
-          :key="index"
-          :src="getImageUrl(img)"
-          mode="widthFix"
-          class="gallery-image"
-          @click="previewImage(index)"
-        ></image>
+        <view class="gallery-item" v-for="(img, index) in activity.images" :key="index">
+          <image :src="getImageUrl(img)" mode="aspectFill" class="gallery-image" @click="previewImage(index)"></image>
+          <text v-if="isOrganizer" class="img-delete" @click="removeImage(index)">✕</text>
+        </view>
       </view>
       <view v-if="isOrganizer" class="upload-section">
         <button class="btn-upload" @click="chooseAndUploadImages">上传活动图片</button>
@@ -258,6 +257,23 @@ export default {
     goReviewRegs() {
       uni.navigateTo({ url: '/pages/manage/review?activityId=' + this.activity._id });
     },
+    removeImage(index) {
+      var self = this;
+      uni.showModal({
+        title: '删除图片',
+        content: '确定要删除这张图片吗？',
+        success: function(res) {
+          if (res.confirm) {
+            var newImages = self.activity.images.slice();
+            newImages.splice(index, 1);
+            activityApi.update(self.activity._id, { images: newImages }).then(function() {
+              uni.showToast({ title: '已删除', icon: 'success' });
+              self.loadDetail(self.activity._id);
+            });
+          }
+        }
+      });
+    },
     chooseAndUploadImages() {
       var self = this;
       uni.chooseImage({
@@ -324,8 +340,12 @@ export default {
 .section { margin: 20rpx; background: #fff; border-radius: 16rpx; padding: 24rpx; }
 .section-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; display: block; }
 .desc { font-size: 28rpx; color: #666; line-height: 1.8; display: block; }
+.tags-row { margin-top: 16rpx; display: flex; flex-wrap: wrap; }
+.tag { font-size: 22rpx; color: #4CAF50; background: #E8F5E9; padding: 6rpx 20rpx; border-radius: 20rpx; margin: 0 12rpx 12rpx 0; }
 .image-gallery { margin-top: 20rpx; display: flex; flex-wrap: wrap; }
-.gallery-image { width: 31%; margin: 0 1% 12rpx 1%; border-radius: 8rpx; }
+.gallery-item { width: 31%; margin: 0 1% 12rpx 1%; position: relative; }
+.gallery-image { width: 100%; height: 200rpx; border-radius: 8rpx; }
+.img-delete { position: absolute; top: -10rpx; right: -10rpx; width: 40rpx; height: 40rpx; line-height: 40rpx; text-align: center; background: rgba(0,0,0,0.6); color: #fff; font-size: 24rpx; border-radius: 50%; }
 .upload-section { margin-top: 20rpx; }
 .btn-upload { background: #E8F5E9; color: #4CAF50; border: 2rpx dashed #4CAF50; border-radius: 12rpx; height: 72rpx; line-height: 72rpx; font-size: 28rpx; }
 .upload-hint { font-size: 22rpx; color: #999; display: block; text-align: center; margin-top: 8rpx; }

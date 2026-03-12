@@ -18,6 +18,9 @@
     <view class="section">
       <text class="section-title">简介</text>
       <text class="desc">{{ club.description || '暂无简介' }}</text>
+      <view class="tags-row" v-if="club.tags && club.tags.length > 0">
+        <text class="tag" v-for="(t, i) in club.tags" :key="i">{{ t }}</text>
+      </view>
     </view>
 
     <view class="section">
@@ -170,6 +173,8 @@ export default {
 .section-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; display: block; }
 .announcement { font-size: 28rpx; color: #E65100; background: #FFF3E0; padding: 16rpx; border-radius: 8rpx; display: block; }
 .desc { font-size: 28rpx; color: #666; line-height: 1.6; display: block; }
+.tags-row { margin-top: 16rpx; display: flex; flex-wrap: wrap; }
+.tag { font-size: 22rpx; color: #4CAF50; background: #E8F5E9; padding: 6rpx 20rpx; border-radius: 20rpx; margin: 0 12rpx 12rpx 0; }
 .member-list { display: flex; flex-wrap: wrap; }
 .member-item { display: flex; align-items: center; background: #f5f5f5; border-radius: 8rpx; padding: 12rpx 16rpx; margin: 0 16rpx 16rpx 0; }
 .member-avatar { width: 48rpx; height: 48rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22rpx; margin-right: 8rpx; }
