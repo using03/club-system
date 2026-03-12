@@ -75,6 +75,8 @@
       <button v-if="canRegister" class="btn-register" @click="registerActivity">立即报名</button>
       <button v-if="canCheckIn" class="btn-checkin" @click="checkIn">签到打卡</button>
       <button v-if="canFeedback" class="btn-feedback" @click="openFeedback">评价活动</button>
+      <button v-if="isOrganizer" class="btn-edit-act" @click="editActivity">编辑</button>
+      <button v-if="isOrganizer && hasPendingRegs" class="btn-review" @click="goReviewRegs">审核报名</button>
     </view>
 
     <view class="feedback-modal" v-if="showFeedback" @click="closeFeedbackMaybe">
@@ -136,6 +138,12 @@ export default {
       var org = this.activity.organizer;
       if (org && org._id) return org._id === this.currentUserId;
       return org === this.currentUserId;
+    },
+    hasPendingRegs() {
+      for (var i = 0; i < this.registrations.length; i++) {
+        if (this.registrations[i].status === 'pending') return true;
+      }
+      return false;
     }
   },
   onLoad(options) {
@@ -244,6 +252,12 @@ export default {
         this.myCheckIn = true;
       } catch(err) { console.error(err); }
     },
+    editActivity() {
+      uni.navigateTo({ url: '/pages/activity/edit?id=' + this.activity._id });
+    },
+    goReviewRegs() {
+      uni.navigateTo({ url: '/pages/manage/review?activityId=' + this.activity._id });
+    },
     chooseAndUploadImages() {
       var self = this;
       uni.chooseImage({
@@ -342,6 +356,8 @@ export default {
 .star { font-size: 48rpx; color: #ddd; padding: 0 8rpx; }
 .star.active { color: #ff9800; }
 .comment-input { width: 100%; height: 200rpx; background: #f5f5f5; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; box-sizing: border-box; }
+.btn-edit-act { background: #2196F3; color: #fff; }
+.btn-review { background: #ff9800; color: #fff; }
 .btn-submit { width: 100%; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 24rpx; }
 .btn-cancel { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 16rpx; }
 </style>

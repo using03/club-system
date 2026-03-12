@@ -52,7 +52,11 @@
     <view class="actions" v-if="!isMember">
       <button class="btn-join" @click="joinClub">加入社团</button>
     </view>
-    <view class="actions" v-else-if="!isPresident">
+    <view class="actions actions-row" v-else-if="isPresident">
+      <button class="btn-edit" @click="editClub">编辑社团</button>
+      <button class="btn-manage" @click="createActivity">发布活动</button>
+    </view>
+    <view class="actions" v-else>
       <button class="btn-leave" @click="leaveClub">退出社团</button>
     </view>
   </view>
@@ -136,6 +140,12 @@ export default {
         this.loadClub(this.club._id);
       } catch(err) { console.error(err); }
     },
+    editClub() {
+      uni.navigateTo({ url: '/pages/club/edit?id=' + this.club._id });
+    },
+    createActivity() {
+      uni.navigateTo({ url: '/pages/activity/create?clubId=' + this.club._id });
+    },
     async leaveClub() {
       try {
         await memberApi.leave(this.club._id);
@@ -181,4 +191,8 @@ export default {
 .actions { position: fixed; bottom: 0; left: 0; right: 0; padding: 20rpx; background: #fff; box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06); }
 .btn-join { background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 88rpx; line-height: 88rpx; font-size: 32rpx; }
 .btn-leave { background: #f44336; color: #fff; border: none; border-radius: 12rpx; height: 88rpx; line-height: 88rpx; font-size: 32rpx; }
+.actions-row { display: flex; }
+.actions-row button { flex: 1; margin: 0 8rpx; height: 88rpx; line-height: 88rpx; font-size: 30rpx; border: none; border-radius: 12rpx; }
+.btn-edit { background: #2196F3; color: #fff; }
+.btn-manage { background: #4CAF50; color: #fff; }
 </style>

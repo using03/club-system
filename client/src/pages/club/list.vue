@@ -1,7 +1,10 @@
 <template>
   <view class="club-list-page">
-    <view class="search-bar">
-      <input v-model="keyword" placeholder="搜索社团" class="search-input" @confirm="loadClubs" />
+    <view class="top-bar">
+      <view class="search-bar-inner">
+        <input v-model="keyword" placeholder="搜索社团" class="search-input" @confirm="loadClubs" />
+      </view>
+      <button class="btn-create-club" @click="goCreateClub">+ 创建</button>
     </view>
     <view class="category-bar">
       <text
@@ -64,15 +67,25 @@ export default {
       return new Date(d).toLocaleDateString('zh-CN');
     },
     goDetail(id) {
-      uni.navigateTo({ url: `/pages/club/detail?id=${id}` });
+      uni.navigateTo({ url: '/pages/club/detail?id=' + id });
+    },
+    goCreateClub() {
+      var token = uni.getStorageSync('token');
+      if (!token) {
+        uni.showToast({ title: '请先登录', icon: 'none' });
+        return;
+      }
+      uni.navigateTo({ url: '/pages/club/create' });
     }
   }
 };
 </script>
 
 <style scoped>
-.search-bar { padding: 16rpx 20rpx; background: #fff; }
+.top-bar { display: flex; align-items: center; padding: 16rpx 20rpx; background: #fff; }
+.search-bar-inner { flex: 1; }
 .search-input { background: #f5f5f5; border-radius: 36rpx; height: 72rpx; padding: 0 24rpx; font-size: 28rpx; }
+.btn-create-club { flex-shrink: 0; margin-left: 16rpx; background: #4CAF50; color: #fff; border: none; border-radius: 36rpx; font-size: 26rpx; padding: 0 24rpx; height: 72rpx; line-height: 72rpx; }
 .category-bar { display: flex; padding: 16rpx 20rpx; background: #fff; overflow-x: auto; white-space: nowrap; gap: 12rpx; border-bottom: 1rpx solid #eee; }
 .cat-item { font-size: 24rpx; color: #666; padding: 8rpx 24rpx; border-radius: 24rpx; background: #f5f5f5; flex-shrink: 0; }
 .cat-item.active { background: #4CAF50; color: #fff; }

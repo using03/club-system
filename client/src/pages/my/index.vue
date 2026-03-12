@@ -16,22 +16,22 @@
     </view>
 
     <view class="menu-section">
-      <view class="menu-item" @click="goClubList">
+      <view class="menu-item" @click="goMyClubs">
         <text class="menu-icon">🏫</text>
         <text class="menu-text">我的社团</text>
         <text class="menu-arrow">></text>
       </view>
-      <view class="menu-item" @click="goActivityList">
+      <view class="menu-item" @click="goMyActivities">
         <text class="menu-icon">📅</text>
         <text class="menu-text">我的活动</text>
         <text class="menu-arrow">></text>
       </view>
-      <view class="menu-item" @click="goClubList">
+      <view class="menu-item" @click="goMyRegistrations">
         <text class="menu-icon">📝</text>
         <text class="menu-text">报名记录</text>
         <text class="menu-arrow">></text>
       </view>
-      <view class="menu-item" @click="goClubList">
+      <view class="menu-item" @click="goMyCheckins">
         <text class="menu-icon">✅</text>
         <text class="menu-text">签到记录</text>
         <text class="menu-arrow">></text>
@@ -39,11 +39,6 @@
     </view>
 
     <view class="menu-section">
-      <view class="menu-item" @click="goClubList">
-        <text class="menu-icon">⚙️</text>
-        <text class="menu-text">设置</text>
-        <text class="menu-arrow">></text>
-      </view>
       <view class="menu-item" v-if="userInfo" @click="logout">
         <text class="menu-icon">🚪</text>
         <text class="menu-text" style="color: #f44336;">退出登录</text>
@@ -61,7 +56,7 @@ export default {
     };
   },
   onShow() {
-    const str = uni.getStorageSync('userInfo');
+    var str = uni.getStorageSync('userInfo');
     if (str) {
       try { this.userInfo = JSON.parse(str); } catch(e) {}
     } else {
@@ -70,16 +65,33 @@ export default {
   },
   methods: {
     roleText(role) {
-      return { student: '学生', club_admin: '社团管理员', admin: '系统管理员' }[role] || '学生';
+      var map = { student: '学生', club_admin: '社团管理员', admin: '系统管理员' };
+      return map[role] || '学生';
+    },
+    checkLogin() {
+      if (!this.userInfo) {
+        uni.showToast({ title: '请先登录', icon: 'none' });
+        setTimeout(function() {
+          uni.navigateTo({ url: '/pages/login/index' });
+        }, 500);
+        return false;
+      }
+      return true;
     },
     goLogin() {
       uni.navigateTo({ url: '/pages/login/index' });
     },
-    goClubList() {
-      uni.navigateTo({ url: '/pages/club/list' });
+    goMyClubs() {
+      if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/clubs' });
     },
-    goActivityList() {
-      uni.switchTab({ url: '/pages/activity/list' });
+    goMyActivities() {
+      if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/activities' });
+    },
+    goMyRegistrations() {
+      if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/registrations' });
+    },
+    goMyCheckins() {
+      if (this.checkLogin()) uni.navigateTo({ url: '/pages/my/checkins' });
     },
     logout() {
       uni.removeStorageSync('token');

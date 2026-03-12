@@ -41,6 +41,60 @@
       "style": {
         "navigationBarTitleText": "登录"
       }
+    },
+    {
+      "path": "pages/my/clubs",
+      "style": {
+        "navigationBarTitleText": "我的社团"
+      }
+    },
+    {
+      "path": "pages/my/activities",
+      "style": {
+        "navigationBarTitleText": "我的活动"
+      }
+    },
+    {
+      "path": "pages/my/registrations",
+      "style": {
+        "navigationBarTitleText": "报名记录"
+      }
+    },
+    {
+      "path": "pages/my/checkins",
+      "style": {
+        "navigationBarTitleText": "签到记录"
+      }
+    },
+    {
+      "path": "pages/club/create",
+      "style": {
+        "navigationBarTitleText": "创建社团"
+      }
+    },
+    {
+      "path": "pages/club/edit",
+      "style": {
+        "navigationBarTitleText": "编辑社团"
+      }
+    },
+    {
+      "path": "pages/activity/create",
+      "style": {
+        "navigationBarTitleText": "发布活动"
+      }
+    },
+    {
+      "path": "pages/activity/edit",
+      "style": {
+        "navigationBarTitleText": "编辑活动"
+      }
+    },
+    {
+      "path": "pages/manage/review",
+      "style": {
+        "navigationBarTitleText": "报名审核"
+      }
     }
   ],
   "globalStyle": {
