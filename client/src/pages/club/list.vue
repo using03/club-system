@@ -15,7 +15,8 @@
     </view>
     <view class="list">
       <view class="club-item" v-for="club in clubs" :key="club._id" @click="goDetail(club._id)">
-        <view class="club-avatar">{{ club.name.charAt(0) }}</view>
+        <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
+        <view v-else class="club-avatar">{{ club.name.charAt(0) }}</view>
         <view class="club-info">
           <text class="club-name">{{ club.name }}</text>
           <text class="club-desc">{{ club.description || '暂无简介' }}</text>
@@ -69,6 +70,11 @@ export default {
       if (!d) return '';
       return new Date(d).toLocaleDateString('zh-CN');
     },
+    getLogoUrl(path) {
+      if (!path) return '';
+      if (path.indexOf('http') === 0) return path;
+      return 'http://127.0.0.1:3000' + path;
+    },
     goDetail(id) {
       uni.navigateTo({ url: '/pages/club/detail?id=' + id });
     },
@@ -95,6 +101,7 @@ export default {
 .list { padding: 20rpx; }
 .club-item { display: flex; background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06); }
 .club-avatar { width: 96rpx; height: 96rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 36rpx; font-weight: bold; flex-shrink: 0; margin-right: 20rpx; }
+.club-logo { width: 96rpx; height: 96rpx; border-radius: 50%; flex-shrink: 0; margin-right: 20rpx; }
 .club-info { flex: 1; }
 .club-name { font-size: 30rpx; font-weight: bold; color: #333; display: block; }
 .club-desc { font-size: 24rpx; color: #666; margin-top: 8rpx; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

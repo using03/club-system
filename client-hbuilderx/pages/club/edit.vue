@@ -21,9 +21,15 @@
       </view>
       <view class="form-group">
         <text class="label">社团Logo</text>
-        <view class="logo-upload" @click="chooseLogo">
-          <image v-if="form.logo" :src="getFullUrl(form.logo)" class="logo-preview" mode="aspectFill"></image>
-          <text v-else class="upload-placeholder">+ 上传Logo</text>
+        <view class="logo-area">
+          <view class="logo-upload" @click="chooseLogo">
+            <image v-if="form.logo" :src="getFullUrl(form.logo)" class="logo-preview" mode="aspectFill"></image>
+            <text v-else class="upload-placeholder">+ 上传Logo</text>
+          </view>
+          <view v-if="form.logo" class="logo-actions">
+            <text class="logo-action-btn change" @click="chooseLogo">更换</text>
+            <text class="logo-action-btn delete" @click="removeLogo">删除</text>
+          </view>
         </view>
       </view>
       <view class="form-group">
@@ -93,6 +99,9 @@ export default {
       if (path.indexOf('http') === 0) return path;
       return 'http://127.0.0.1:3000' + path;
     },
+    removeLogo() {
+      this.form.logo = '';
+    },
     chooseLogo() {
       var self = this;
       uni.chooseImage({
@@ -136,8 +145,13 @@ export default {
 .input { width: 100%; height: 80rpx; background: #f5f5f5; border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; box-sizing: border-box; }
 .textarea { width: 100%; height: 160rpx; background: #f5f5f5; border-radius: 12rpx; padding: 20rpx; font-size: 28rpx; box-sizing: border-box; }
 .picker-value { height: 80rpx; line-height: 80rpx; background: #f5f5f5; border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; color: #333; }
+.logo-area { display: flex; align-items: flex-end; }
 .logo-upload { width: 160rpx; height: 160rpx; background: #f5f5f5; border-radius: 16rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed #ddd; }
 .logo-preview { width: 160rpx; height: 160rpx; border-radius: 16rpx; }
 .upload-placeholder { font-size: 24rpx; color: #999; }
+.logo-actions { margin-left: 20rpx; display: flex; flex-direction: column; }
+.logo-action-btn { font-size: 24rpx; padding: 8rpx 24rpx; border-radius: 8rpx; margin-bottom: 12rpx; text-align: center; }
+.logo-action-btn.change { background: #E3F2FD; color: #1976D2; }
+.logo-action-btn.delete { background: #FFEBEE; color: #f44336; }
 .btn-submit { margin-top: 40rpx; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 88rpx; line-height: 88rpx; font-size: 32rpx; }
 </style>

@@ -12,7 +12,8 @@
       </view>
       <scroll-view scroll-x class="club-scroll">
         <view class="club-card" v-for="club in clubs" :key="club._id" @click="goClubDetail(club._id)">
-          <view class="club-avatar">{{ club.name.charAt(0) }}</view>
+          <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
+          <view v-else class="club-avatar">{{ club.name.charAt(0) }}</view>
           <text class="club-name">{{ club.name }}</text>
           <text class="club-category">{{ club.category }}</text>
           <text class="club-members">{{ club.memberCount }}人</text>
@@ -74,6 +75,11 @@ export default {
         console.error('加载数据失败:', err);
       }
     },
+    getLogoUrl(path) {
+      if (!path) return '';
+      if (path.indexOf('http') === 0) return path;
+      return 'http://127.0.0.1:3000' + path;
+    },
     formatDate(dateStr) {
       if (!dateStr) return '';
       const d = new Date(dateStr);
@@ -130,6 +136,7 @@ export default {
   display: flex; align-items: center; justify-content: center;
   font-size: 32rpx; font-weight: bold; margin-bottom: 12rpx;
 }
+.club-logo { width: 80rpx; height: 80rpx; border-radius: 50%; margin-bottom: 12rpx; }
 .club-name { font-size: 26rpx; color: #333; font-weight: 500; }
 .club-category { font-size: 20rpx; color: #999; margin-top: 4rpx; }
 .club-members { font-size: 20rpx; color: #4CAF50; margin-top: 4rpx; }
