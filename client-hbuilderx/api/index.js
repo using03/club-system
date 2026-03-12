@@ -39,7 +39,7 @@ export const activityApi = {
   register: (id, data) => post(`/activities/${id}/register`, data),
   reviewRegistration: (activityId, regId, data) => put(`/activities/${activityId}/registrations/${regId}`, data),
   generateCheckinCode: (id) => post(`/activities/${id}/checkin-code`),
-  disableCheckinCode: (id) => post(`/activities/${id}/checkin-code/disable`)
+  stopCheckin: (id) => post(`/activities/${id}/checkin-code/stop`)
 };
 
 export const checkinApi = {

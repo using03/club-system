@@ -215,7 +215,7 @@ router.post('/:id/checkin-code', auth, async (req, res) => {
   }
 });
 
-router.post('/:id/checkin-code/disable', auth, async (req, res) => {
+router.post('/:id/checkin-code/stop', auth, async (req, res) => {
   try {
     const activity = await Activity.findById(req.params.id);
     if (!activity) return error(res, '活动不存在', 404);
@@ -224,11 +224,11 @@ router.post('/:id/checkin-code/disable', auth, async (req, res) => {
       return error(res, '无权操作', 403);
     }
 
-    activity.checkinCodeEnabled = false;
+    activity.status = 'ended';
     activity.checkinCode = '';
     await activity.save();
 
-    return success(res, null, '签到码已关闭');
+    return success(res, null, '签到已结束，活动已标记为已结束');
   } catch (err) {
     return error(res, err.message, 500);
   }
