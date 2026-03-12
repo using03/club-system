@@ -28,6 +28,12 @@ router.post('/:activityId', auth, async (req, res) => {
     const existing = await CheckIn.findOne({ user: req.userId, activity: req.params.activityId });
     if (existing) return error(res, '您已签到');
 
+    if (activity.checkinCodeEnabled) {
+      var code = req.body.checkinCode || '';
+      if (!code) return error(res, '请输入签到码');
+      if (code !== activity.checkinCode) return error(res, '签到码错误');
+    }
+
     const checkIn = await CheckIn.create({
       user: req.userId,
       activity: req.params.activityId,

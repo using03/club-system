@@ -58,7 +58,15 @@ const activitySchema = new mongoose.Schema({
   },
   tags: [{
     type: String
-  }]
+  }],
+  checkinCode: {
+    type: String,
+    default: ''
+  },
+  checkinCodeEnabled: {
+    type: Boolean,
+    default: false
+  }
 }, {
   timestamps: true
 });

@@ -34,7 +34,9 @@ export const activityApi = {
   update: (id, data) => put(`/activities/${id}`, data),
   remove: (id) => del(`/activities/${id}`),
   register: (id, data) => post(`/activities/${id}/register`, data),
-  reviewRegistration: (activityId, regId, data) => put(`/activities/${activityId}/registrations/${regId}`, data)
+  reviewRegistration: (activityId, regId, data) => put(`/activities/${activityId}/registrations/${regId}`, data),
+  generateCheckinCode: (id) => post(`/activities/${id}/checkin-code`),
+  disableCheckinCode: (id) => post(`/activities/${id}/checkin-code/disable`)
 };
 
 export const checkinApi = {

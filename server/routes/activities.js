@@ -192,4 +192,46 @@ router.put('/:activityId/registrations/:regId', auth, async (req, res) => {
   }
 });
 
+function generateCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+router.post('/:id/checkin-code', auth, async (req, res) => {
+  try {
+    const activity = await Activity.findById(req.params.id);
+    if (!activity) return error(res, '活动不存在', 404);
+
+    if (activity.organizer.toString() !== req.userId.toString() && req.user.role !== 'admin') {
+      return error(res, '无权操作', 403);
+    }
+
+    activity.checkinCode = generateCode();
+    activity.checkinCodeEnabled = true;
+    await activity.save();
+
+    return success(res, { checkinCode: activity.checkinCode }, '签到码已生成');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
+router.post('/:id/checkin-code/disable', auth, async (req, res) => {
+  try {
+    const activity = await Activity.findById(req.params.id);
+    if (!activity) return error(res, '活动不存在', 404);
+
+    if (activity.organizer.toString() !== req.userId.toString() && req.user.role !== 'admin') {
+      return error(res, '无权操作', 403);
+    }
+
+    activity.checkinCodeEnabled = false;
+    activity.checkinCode = '';
+    await activity.save();
+
+    return success(res, null, '签到码已关闭');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
 module.exports = router;

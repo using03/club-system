@@ -97,6 +97,19 @@
         <button class="btn-cancel" @click="closeFeedback">取消</button>
       </view>
     </view>
+
+    <view class="feedback-modal" v-if="showCheckinCode" @click="showCheckinCode = false">
+      <view class="modal-content" @click.stop="">
+        <view class="modal-header">
+          <text class="modal-title">输入签到码</text>
+          <text class="modal-close" @click="showCheckinCode = false">✕</text>
+        </view>
+        <text class="code-hint">请向活动组织者获取签到码</text>
+        <input v-model="checkinCodeInput" type="number" maxlength="6" placeholder="请输入6位签到码" class="code-input" />
+        <button class="btn-submit" @click="submitCheckinWithCode">确认签到</button>
+        <button class="btn-cancel" @click="showCheckinCode = false">取消</button>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -114,6 +127,8 @@ export default {
       myCheckIn: false,
       showFeedback: false,
       feedbackForm: { rating: 5, comment: '' },
+      showCheckinCode: false,
+      checkinCodeInput: '',
       currentUserId: ''
     };
   },
@@ -245,12 +260,32 @@ export default {
         this.loadDetail(this.activity._id);
       } catch(err) { console.error(err); }
     },
-    async checkIn() {
+    checkIn() {
+      if (this.activity.checkinCodeEnabled) {
+        this.checkinCodeInput = '';
+        this.showCheckinCode = true;
+      } else {
+        this.doCheckIn('');
+      }
+    },
+    async submitCheckinWithCode() {
+      if (!this.checkinCodeInput) {
+        uni.showToast({ title: '请输入签到码', icon: 'none' });
+        return;
+      }
+      await this.doCheckIn(this.checkinCodeInput);
+    },
+    async doCheckIn(code) {
       try {
-        await checkinApi.checkIn(this.activity._id, {});
+        var data = {};
+        if (code) data.checkinCode = code;
+        await checkinApi.checkIn(this.activity._id, data);
         uni.showToast({ title: '签到成功', icon: 'success' });
         this.myCheckIn = true;
-      } catch(err) { console.error(err); }
+        this.showCheckinCode = false;
+      } catch(err) {
+        console.error(err);
+      }
     },
     editActivity() {
       uni.navigateTo({ url: '/pages/activity/edit?id=' + this.activity._id });
@@ -385,4 +420,6 @@ export default {
 .btn-view-checkins { background: #009688; color: #fff; }
 .btn-submit { width: 100%; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 24rpx; }
 .btn-cancel { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 16rpx; }
+.code-hint { font-size: 26rpx; color: #666; display: block; margin-bottom: 20rpx; }
+.code-input { width: 100%; height: 100rpx; background: #f5f5f5; border-radius: 12rpx; text-align: center; font-size: 48rpx; font-weight: bold; letter-spacing: 16rpx; color: #2196F3; box-sizing: border-box; margin-bottom: 20rpx; }
 </style>
