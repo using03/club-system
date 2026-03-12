@@ -13,6 +13,8 @@
         </view>
         <view class="card-footer">
           <text class="status-text">活动状态：{{ statusText(act.status) }}</text>
+          <text class="checkin-badge" v-if="act.checkedIn">已签到</text>
+          <text class="no-checkin-badge" v-else-if="act.regStatus === 'approved'">待签到</text>
         </view>
       </view>
     </view>
@@ -79,8 +81,10 @@ export default {
 .reg-badge.rejected { background: #FFEBEE; color: #f44336; }
 .card-meta { margin-top: 12rpx; display: flex; flex-wrap: wrap; }
 .meta { font-size: 22rpx; color: #999; margin-right: 16rpx; }
-.card-footer { margin-top: 12rpx; }
+.card-footer { margin-top: 12rpx; display: flex; justify-content: space-between; align-items: center; }
 .status-text { font-size: 22rpx; color: #666; }
+.checkin-badge { font-size: 22rpx; color: #4CAF50; background: #E8F5E9; padding: 4rpx 16rpx; border-radius: 12rpx; }
+.no-checkin-badge { font-size: 22rpx; color: #ff9800; background: #FFF3E0; padding: 4rpx 16rpx; border-radius: 12rpx; }
 .empty { display: flex; flex-direction: column; align-items: center; padding-top: 200rpx; }
 .empty-icon { font-size: 100rpx; }
 .empty-text { font-size: 28rpx; color: #999; margin-top: 20rpx; }

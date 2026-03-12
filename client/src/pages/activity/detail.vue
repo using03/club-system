@@ -1,6 +1,8 @@
 <template>
   <view class="activity-detail" v-if="activity">
-    <image class="cover-image" v-if="activity.coverImage" :src="getImageUrl(activity.coverImage)" mode="aspectFill"></image>
+    <view class="cover-wrap" v-if="activity.coverImage">
+      <image class="cover-image" :src="getImageUrl(activity.coverImage)" mode="aspectFill" @click="previewCover"></image>
+    </view>
     <view class="header">
       <text class="title">{{ activity.title }}</text>
       <text class="status-tag">{{ statusText(activity.status) }}</text>
@@ -169,6 +171,11 @@ export default {
     if (options.id) this.loadDetail(options.id);
   },
   methods: {
+    previewCover() {
+      if (this.activity && this.activity.coverImage) {
+        uni.previewImage({ urls: [this.getImageUrl(this.activity.coverImage)] });
+      }
+    },
     getImageUrl(path) {
       if (!path) return '';
       if (path.indexOf('http') === 0) return path;
@@ -366,7 +373,8 @@ export default {
 
 <style scoped>
 .activity-detail { padding-bottom: 120rpx; }
-.cover-image { width: 100%; height: 360rpx; display: block; }
+.cover-wrap { margin: 20rpx; }
+.cover-image { width: 100%; height: 360rpx; display: block; border-radius: 16rpx; }
 .header { background: linear-gradient(135deg, #4CAF50, #66BB6A); padding: 32rpx; color: #fff; }
 .title { font-size: 36rpx; font-weight: bold; display: block; }
 .status-tag { font-size: 24rpx; padding: 4rpx 16rpx; border-radius: 20rpx; margin-top: 12rpx; display: inline-block; background: rgba(255,255,255,0.3); }

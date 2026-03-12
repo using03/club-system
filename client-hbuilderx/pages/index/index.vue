@@ -126,20 +126,23 @@ export default {
   flex-direction: column;
   align-items: center;
   width: 200rpx;
+  height: 260rpx;
   background: #fff;
   border-radius: 16rpx;
   padding: 24rpx 16rpx;
   margin-right: 16rpx;
+  vertical-align: top;
+  overflow: hidden;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.08);
 }
-.club-avatar-wrap { width: 80rpx; height: 80rpx; margin-bottom: 12rpx; }
+.club-avatar-wrap { width: 80rpx; height: 80rpx; margin-bottom: 12rpx; flex-shrink: 0; }
 .club-avatar {
   width: 80rpx; height: 80rpx; border-radius: 50%;
   background: #4CAF50; color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 32rpx; font-weight: bold;
 }
-.club-logo { width: 80rpx; height: 80rpx; border-radius: 50%; display: block; }
+.club-logo { width: 80rpx; height: 80rpx; border-radius: 50%; display: block; object-fit: cover; }
 .club-name { font-size: 26rpx; color: #333; font-weight: 500; }
 .club-category { font-size: 20rpx; color: #999; margin-top: 4rpx; }
 .club-members { font-size: 20rpx; color: #4CAF50; margin-top: 4rpx; }

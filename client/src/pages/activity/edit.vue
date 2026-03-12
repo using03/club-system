@@ -33,6 +33,10 @@
           <image v-if="form.coverImage" :src="getFullUrl(form.coverImage)" class="cover-preview" mode="aspectFill"></image>
           <text v-else class="upload-placeholder">+ 上传封面</text>
         </view>
+        <view v-if="form.coverImage" class="cover-actions">
+          <text class="cover-btn change" @click="chooseCover">更换</text>
+          <text class="cover-btn delete" @click="form.coverImage = ''">删除</text>
+        </view>
       </view>
     </view>
     <button class="btn-submit" @click="handleSubmit">保存修改</button>
@@ -142,6 +146,10 @@ export default {
 .cover-upload { width: 100%; height: 300rpx; background: #f5f5f5; border-radius: 16rpx; display: flex; align-items: center; justify-content: center; border: 2rpx dashed #ddd; }
 .cover-preview { width: 100%; height: 300rpx; border-radius: 16rpx; }
 .upload-placeholder { font-size: 28rpx; color: #999; }
+.cover-actions { display: flex; margin-top: 12rpx; }
+.cover-btn { font-size: 24rpx; padding: 8rpx 24rpx; border-radius: 8rpx; margin-right: 16rpx; }
+.cover-btn.change { background: #E3F2FD; color: #1976D2; }
+.cover-btn.delete { background: #FFEBEE; color: #f44336; }
 .btn-submit { margin-top: 40rpx; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 88rpx; line-height: 88rpx; font-size: 32rpx; }
 .btn-danger { margin-top: 20rpx; background: #fff; color: #f44336; border: 2rpx solid #f44336; border-radius: 12rpx; height: 88rpx; line-height: 88rpx; font-size: 32rpx; }
 </style>

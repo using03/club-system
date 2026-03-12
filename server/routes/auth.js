@@ -121,6 +121,9 @@ router.get('/my-activities', auth, async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
+    const myCheckins = await CheckIn.find({ user: req.userId }).select('activity');
+    const checkedActivityIds = myCheckins.map(function(c) { return c.activity.toString(); });
+
     const activities = registrations
       .filter(function(r) { return r.activity; })
       .map(function(r) {
@@ -136,9 +139,15 @@ router.get('/my-activities', auth, async (req, res) => {
           maxParticipants: r.activity.maxParticipants,
           currentParticipants: r.activity.currentParticipants,
           regStatus: r.status,
-          regId: r._id
+          regId: r._id,
+          checkedIn: checkedActivityIds.indexOf(r.activity._id.toString()) >= 0
         };
       });
+
+    activities.sort(function(a, b) {
+      if (a.checkedIn === b.checkedIn) return 0;
+      return a.checkedIn ? 1 : -1;
+    });
 
     return success(res, { activities, total: activities.length });
   } catch (err) {

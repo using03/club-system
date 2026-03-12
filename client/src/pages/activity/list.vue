@@ -12,6 +12,7 @@
     </view>
     <view class="list">
       <view class="activity-card" v-for="act in activities" :key="act._id" @click="goDetail(act._id)">
+        <image v-if="act.coverImage" :src="getCoverUrl(act.coverImage)" class="card-cover" mode="aspectFill"></image>
         <view class="card-header">
           <text class="activity-title">{{ act.title }}</text>
           <text class="status-badge" :class="act.status">{{ statusText(act.status) }}</text>
@@ -79,6 +80,11 @@ export default {
       const dt = new Date(d);
       return `${dt.getMonth()+1}月${dt.getDate()}日 ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;
     },
+    getCoverUrl(path) {
+      if (!path) return '';
+      if (path.indexOf('http') === 0) return path;
+      return 'http://127.0.0.1:3000' + path;
+    },
     goDetail(id) {
       uni.navigateTo({ url: `/pages/activity/detail?id=${id}` });
     }
@@ -93,7 +99,8 @@ export default {
 .status-item { font-size: 24rpx; color: #666; padding: 8rpx 24rpx; border-radius: 24rpx; background: #f5f5f5; }
 .status-item.active { background: #4CAF50; color: #fff; }
 .list { padding: 20rpx; }
-.activity-card { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06); }
+.activity-card { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06); overflow: hidden; }
+.card-cover { width: calc(100% + 48rpx); height: 200rpx; margin: -24rpx -24rpx 16rpx -24rpx; display: block; }
 .card-header { display: flex; justify-content: space-between; align-items: center; }
 .activity-title { font-size: 30rpx; font-weight: bold; color: #333; flex: 1; }
 .status-badge { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; flex-shrink: 0; }
