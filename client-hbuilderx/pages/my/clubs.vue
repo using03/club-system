@@ -24,6 +24,16 @@
       <text class="empty-text">你还没有加入任何社团</text>
       <button class="btn-explore" @click="goExplore">去看看</button>
     </view>
+    <view class="reject-modal" v-if="showPendingInfo && selectedClub" @click="showPendingInfo = false">
+      <view class="modal-content" @click.stop="">
+        <text class="modal-title" style="color:#ff9800;">社团审核中</text>
+        <text class="reject-club-name">{{ selectedClub.name }}</text>
+        <text class="pending-hint">你的社团正在等待管理员审核，请耐心等待。</text>
+        <button class="btn-withdraw" @click="withdrawClub">取消申请</button>
+        <button class="btn-close" @click="showPendingInfo = false">关闭</button>
+      </view>
+    </view>
+
     <view class="reject-modal" v-if="showRejectInfo && selectedClub" @click="closeRejectInfo">
       <view class="modal-content" @click.stop="">
         <text class="modal-title">社团审核未通过</text>
@@ -33,6 +43,7 @@
           <text class="reject-reason">{{ selectedClub.rejectReason || '未提供原因' }}</text>
         </view>
         <button class="btn-resubmit" @click="resubmitClub">修改并重新提交</button>
+        <button class="btn-withdraw" @click="withdrawClub">取消申请</button>
         <button class="btn-close" @click="closeRejectInfo">关闭</button>
       </view>
     </view>
@@ -40,7 +51,7 @@
 </template>
 
 <script>
-import { authApi } from '../../api/index';
+import { authApi, clubApi } from '../../api/index';
 
 export default {
   data() {
@@ -48,6 +59,7 @@ export default {
       clubs: [],
       currentUserId: '',
       showRejectInfo: false,
+      showPendingInfo: false,
       selectedClub: null
     };
   },
@@ -89,7 +101,8 @@ export default {
         return;
       }
       if (club.status === 'pending') {
-        uni.showToast({ title: '社团审核中，请耐心等待', icon: 'none' });
+        this.selectedClub = club;
+        this.showPendingInfo = true;
         return;
       }
       uni.navigateTo({ url: '/pages/club/detail?id=' + club._id });
@@ -97,9 +110,26 @@ export default {
     closeRejectInfo() {
       this.showRejectInfo = false;
     },
+    withdrawClub() {
+      var self = this;
+      uni.showModal({
+        title: '取消申请',
+        content: '取消后该社团申请将被删除，不可恢复。确定吗？',
+        success: function(res) {
+          if (res.confirm) {
+            clubApi.withdraw(self.selectedClub._id).then(function() {
+              uni.showToast({ title: '申请已撤回', icon: 'success' });
+              self.showRejectInfo = false;
+              self.showPendingInfo = false;
+              self.loadMyClubs();
+            });
+          }
+        }
+      });
+    },
     resubmitClub() {
       this.showRejectInfo = false;
-      uni.navigateTo({ url: '/pages/club/edit?id=' + this.selectedClub._id + '&resubmit=1' });
+      uni.navigateTo({ url: '/pages/club/reapply?id=' + this.selectedClub._id });
     },
     goExplore() {
       uni.navigateTo({ url: '/pages/club/list' });
@@ -136,5 +166,7 @@ export default {
 .reject-label { font-size: 24rpx; color: #999; display: block; margin-bottom: 8rpx; }
 .reject-reason { font-size: 28rpx; color: #E65100; display: block; line-height: 1.6; }
 .btn-resubmit { width: 100%; background: #4CAF50; color: #fff; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; }
+.btn-withdraw { width: 100%; background: #fff; color: #f44336; border: 2rpx solid #f44336; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 12rpx; }
+.pending-hint { font-size: 28rpx; color: #666; display: block; margin-bottom: 24rpx; line-height: 1.6; }
 .btn-close { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 80rpx; line-height: 80rpx; font-size: 30rpx; margin-top: 12rpx; }
 </style>

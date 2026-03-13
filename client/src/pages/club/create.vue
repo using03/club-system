@@ -27,7 +27,7 @@
         <input v-model="tagsStr" placeholder="例如：编程,算法,技术" class="input" />
       </view>
     </view>
-    <button class="btn-submit" @click="handleSubmit">创建社团</button>
+    <button class="btn-submit" @click="handleSubmit">申请创建</button>
   </view>
 </template>
 
@@ -88,7 +88,7 @@ export default {
         };
         if (this.tagsStr) submitData.tags = this.tagsStr.split(',').map(function(t) { return t.trim(); });
         await clubApi.create(submitData);
-        uni.showToast({ title: '创建成功', icon: 'success' });
+        uni.showToast({ title: '申请已提交，等待审核', icon: 'none' });
         setTimeout(function() { uni.navigateBack(); }, 1000);
       } catch(err) { console.error(err); }
     }

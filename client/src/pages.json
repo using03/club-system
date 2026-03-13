@@ -109,6 +109,12 @@
       }
     },
     {
+      "path": "pages/club/reapply",
+      "style": {
+        "navigationBarTitleText": "重新申请"
+      }
+    },
+    {
       "path": "pages/my/notifications",
       "style": {
         "navigationBarTitleText": "消息中心"

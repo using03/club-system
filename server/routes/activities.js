@@ -154,6 +154,7 @@ router.post('/:id/register', auth, async (req, res) => {
     if (!activity.needApproval) {
       activity.currentParticipants += 1;
       await activity.save();
+      await createNotification(req.userId, 'registration_approved', '报名成功', '你已成功报名活动「' + activity.title + '」，记得准时参加！', activity._id.toString());
     }
 
     return success(res, { registration }, activity.needApproval ? '报名申请已提交，等待审核' : '报名成功', 201);

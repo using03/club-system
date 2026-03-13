@@ -189,4 +189,25 @@ router.put('/:id/reject', auth, async (req, res) => {
   }
 });
 
+router.delete('/:id/withdraw', auth, async (req, res) => {
+  try {
+    var club = await Club.findById(req.params.id);
+    if (!club) return error(res, '社团不存在', 404);
+
+    if (club.president.toString() !== req.userId.toString()) {
+      return error(res, '只有申请人可以取消申请', 403);
+    }
+    if (club.status === 'active') {
+      return error(res, '已通过审核的社团不能取消申请', 400);
+    }
+
+    await Club.findByIdAndDelete(req.params.id);
+    await Activity.deleteMany({ club: req.params.id });
+
+    return success(res, null, '申请已撤回');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
 module.exports = router;
