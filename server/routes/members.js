@@ -105,4 +105,53 @@ router.delete('/:clubId/members/:userId', auth, async (req, res) => {
   }
 });
 
+router.put('/:clubId/transfer', auth, async (req, res) => {
+  try {
+    var club = await Club.findById(req.params.clubId);
+    if (!club) return error(res, '社团不存在', 404);
+
+    if (club.president.toString() !== req.userId.toString()) {
+      return error(res, '只有社长可以转让', 403);
+    }
+
+    var newPresidentId = req.body.userId;
+    if (!newPresidentId) return error(res, '请选择新社长');
+    if (newPresidentId === req.userId.toString()) return error(res, '不能转让给自己');
+
+    var newPresident = club.members.find(function(m) {
+      return m.user.toString() === newPresidentId;
+    });
+    if (!newPresident) return error(res, '该用户不是社团成员');
+
+    var oldPresident = club.members.find(function(m) {
+      return m.user.toString() === req.userId.toString();
+    });
+
+    newPresident.role = 'president';
+    if (oldPresident) oldPresident.role = 'member';
+    club.president = newPresidentId;
+    await club.save();
+
+    var User = require('../models/User');
+    var newUser = await User.findById(newPresidentId);
+    if (newUser && newUser.role === 'student') {
+      newUser.role = 'club_admin';
+      await newUser.save();
+    }
+
+    await createNotification(newPresidentId, 'member_joined', '你已成为社长', req.user.nickname + ' 将社团「' + club.name + '」的社长转让给了你。', club._id.toString());
+
+    for (var i = 0; i < club.members.length; i++) {
+      var mid = club.members[i].user.toString();
+      if (mid !== req.userId.toString() && mid !== newPresidentId) {
+        await createNotification(mid, 'member_joined', '社长变更', '社团「' + club.name + '」的社长已由 ' + req.user.nickname + ' 转让给 ' + (newUser ? newUser.nickname : '新社长'), club._id.toString());
+      }
+    }
+
+    return success(res, { club: club }, '社长已转让');
+  } catch (err) {
+    return error(res, err.message, 500);
+  }
+});
+
 module.exports = router;

@@ -6,11 +6,13 @@ const Registration = require('../models/Registration');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
 const { createNotification } = require('../utils/notify');
+const { autoUpdateAllActivities, autoUpdateActivityStatus } = require('../utils/activityStatus');
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
+    await autoUpdateAllActivities();
     const { page = 1, limit = 10, status, club, keyword } = req.query;
     const query = {};
 
@@ -40,6 +42,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
+    await autoUpdateActivityStatus(req.params.id);
     const activity = await Activity.findById(req.params.id)
       .populate('club', 'name logo description')
       .populate('organizer', 'nickname avatar');

@@ -28,7 +28,8 @@ export const memberApi = {
   leave: (clubId) => post(`/members/${clubId}/leave`),
   getMembers: (clubId) => get(`/members/${clubId}/members`),
   updateRole: (clubId, userId, data) => put(`/members/${clubId}/members/${userId}/role`, data),
-  remove: (clubId, userId) => del(`/members/${clubId}/members/${userId}`)
+  remove: (clubId, userId) => del(`/members/${clubId}/members/${userId}`),
+  transfer: (clubId, data) => put(`/members/${clubId}/transfer`, data)
 };
 
 export const activityApi = {

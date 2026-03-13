@@ -56,8 +56,24 @@
       <button class="btn-join" @click="joinClub">加入社团</button>
     </view>
     <view class="actions actions-row" v-else-if="isPresident">
-      <button class="btn-edit" @click="editClub">编辑社团</button>
+      <button class="btn-edit" @click="editClub">编辑</button>
       <button class="btn-manage" @click="createActivity">发布活动</button>
+      <button class="btn-transfer" @click="showTransferModal = true">转让社长</button>
+    </view>
+
+    <view class="transfer-modal" v-if="showTransferModal" @click="showTransferModal = false">
+      <view class="modal-content" @click.stop="">
+        <text class="modal-title">转让社长</text>
+        <text class="modal-hint">选择一位成员作为新社长，转让后你将变为普通成员。</text>
+        <view class="transfer-list">
+          <view class="transfer-item" v-for="(m, i) in transferableMembers" :key="i" @click="confirmTransfer(m)">
+            <view class="t-avatar">{{ getTransferName(m).charAt(0) }}</view>
+            <text class="t-name">{{ getTransferName(m) }}</text>
+            <text class="t-role">{{ roleText(m.role) }}</text>
+          </view>
+        </view>
+        <button class="btn-cancel-modal" @click="showTransferModal = false">取消</button>
+      </view>
     </view>
     <view class="actions" v-else>
       <button class="btn-leave" @click="leaveClub">退出社团</button>
@@ -73,7 +89,8 @@ export default {
     return {
       club: null,
       clubActivities: [],
-      currentUserId: ''
+      currentUserId: '',
+      showTransferModal: false
     };
   },
   computed: {
@@ -82,6 +99,14 @@ export default {
       return this.club.members.some(function(m) {
         return m.user && m.user._id === this.currentUserId;
       }.bind(this));
+    },
+    transferableMembers() {
+      if (!this.club || !this.club.members) return [];
+      var self = this;
+      return this.club.members.filter(function(m) {
+        var uid = (m.user && m.user._id) ? m.user._id : m.user;
+        return uid !== self.currentUserId;
+      });
     },
     isPresident() {
       if (!this.club || !this.currentUserId) return false;
@@ -143,6 +168,28 @@ export default {
         this.loadClub(this.club._id);
       } catch(err) { console.error(err); }
     },
+    getTransferName(m) {
+      if (m.user && m.user.nickname) return m.user.nickname;
+      return '未知';
+    },
+    confirmTransfer(m) {
+      var self = this;
+      var uid = (m.user && m.user._id) ? m.user._id : m.user;
+      var name = self.getTransferName(m);
+      uni.showModal({
+        title: '确认转让',
+        content: '确定将社长转让给「' + name + '」吗？转让后你将变为普通成员。',
+        success: function(res) {
+          if (res.confirm) {
+            memberApi.transfer(self.club._id, { userId: uid }).then(function() {
+              uni.showToast({ title: '已转让', icon: 'success' });
+              self.showTransferModal = false;
+              self.loadClub(self.club._id);
+            });
+          }
+        }
+      });
+    },
     editClub() {
       uni.navigateTo({ url: '/pages/club/edit?id=' + this.club._id });
     },
@@ -200,4 +247,15 @@ export default {
 .actions-row button { flex: 1; margin: 0 8rpx; height: 88rpx; line-height: 88rpx; font-size: 30rpx; border: none; border-radius: 12rpx; }
 .btn-edit { background: #2196F3; color: #fff; }
 .btn-manage { background: #4CAF50; color: #fff; }
+.btn-transfer { background: #ff9800; color: #fff; }
+.transfer-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
+.modal-content { width: 85%; max-height: 70vh; background: #fff; border-radius: 16rpx; padding: 32rpx; overflow-y: auto; }
+.modal-title { font-size: 32rpx; font-weight: bold; color: #333; display: block; margin-bottom: 12rpx; }
+.modal-hint { font-size: 26rpx; color: #666; display: block; margin-bottom: 24rpx; }
+.transfer-list { }
+.transfer-item { display: flex; align-items: center; padding: 20rpx 0; border-bottom: 1rpx solid #f5f5f5; }
+.t-avatar { width: 64rpx; height: 64rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 26rpx; font-weight: bold; margin-right: 16rpx; flex-shrink: 0; }
+.t-name { flex: 1; font-size: 28rpx; color: #333; }
+.t-role { font-size: 22rpx; color: #999; }
+.btn-cancel-modal { width: 100%; background: #f5f5f5; color: #666; border: none; border-radius: 12rpx; height: 72rpx; line-height: 72rpx; font-size: 28rpx; margin-top: 20rpx; }
 </style>
