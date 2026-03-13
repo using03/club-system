@@ -119,9 +119,19 @@ router.put('/:id', auth, async (req, res) => {
     if (announcement !== undefined) updates.announcement = announcement;
     if (tags !== undefined) updates.tags = tags;
     if (status !== undefined) updates.status = status;
+    if (req.body.rejectReason !== undefined) updates.rejectReason = req.body.rejectReason;
 
+    var oldStatus = club.status;
     const updated = await Club.findByIdAndUpdate(req.params.id, updates, { new: true })
       .populate('president', 'nickname avatar');
+
+    if (oldStatus === 'inactive' && updates.status === 'pending') {
+      var User = require('../models/User');
+      var admins = await User.find({ role: 'admin' }).select('_id');
+      for (var i = 0; i < admins.length; i++) {
+        await createNotification(admins[i]._id, 'club_pending', '社团重新提交审核', '社团「' + updated.name + '」修改后重新提交了审核申请。', updated._id.toString());
+      }
+    }
 
     return success(res, { club: updated }, '更新成功');
   } catch (err) {
@@ -201,8 +211,15 @@ router.delete('/:id/withdraw', auth, async (req, res) => {
       return error(res, '已通过审核的社团不能取消申请', 400);
     }
 
+    var clubName = club.name;
     await Club.findByIdAndDelete(req.params.id);
     await Activity.deleteMany({ club: req.params.id });
+
+    var User = require('../models/User');
+    var admins = await User.find({ role: 'admin' }).select('_id');
+    for (var i = 0; i < admins.length; i++) {
+      await createNotification(admins[i]._id, 'club_withdrawn', '社团申请已撤回', req.user.nickname + ' 撤回了社团「' + clubName + '」的创建申请。', '');
+    }
 
     return success(res, null, '申请已撤回');
   } catch (err) {

@@ -42,6 +42,8 @@ router.post('/:clubId/leave', auth, async (req, res) => {
     club.memberCount = club.members.length;
     await club.save();
 
+    await createNotification(club.president, 'member_left', '成员退出社团', req.user.nickname + ' 退出了社团「' + club.name + '」', club._id.toString());
+
     return success(res, null, '退出社团成功');
   } catch (err) {
     return error(res, err.message, 500);
