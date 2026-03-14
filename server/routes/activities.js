@@ -136,7 +136,7 @@ router.post('/:id/register', auth, async (req, res) => {
     const activity = await Activity.findById(req.params.id);
     if (!activity) return error(res, '活动不存在', 404);
 
-    if (!['published', 'registration'].includes(activity.status)) {
+    if (!['published', 'registration', 'ongoing'].includes(activity.status)) {
       return error(res, '当前活动不在报名阶段');
     }
 

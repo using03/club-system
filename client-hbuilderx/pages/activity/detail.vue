@@ -137,7 +137,7 @@ export default {
     canRegister() {
       if (!this.activity) return false;
       var s = this.activity.status;
-      return (s === 'published' || s === 'registration') && !this.myRegistration;
+      return (s === 'published' || s === 'registration' || s === 'ongoing') && !this.myRegistration;
     },
     canCheckIn() {
       if (!this.activity) return false;
