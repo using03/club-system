@@ -236,6 +236,7 @@ router.post('/:id/checkin-code/stop', auth, async (req, res) => {
 
     activity.status = 'ended';
     activity.checkinCode = '';
+    activity.endTime = new Date();
     await activity.save();
 
     return success(res, null, '签到已结束，活动已标记为已结束');
