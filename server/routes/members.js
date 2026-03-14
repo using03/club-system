@@ -74,8 +74,12 @@ router.put('/:clubId/members/:userId/role', auth, async (req, res) => {
     const member = club.members.find(m => m.user.toString() === req.params.userId);
     if (!member) return error(res, '该用户不是社团成员');
 
-    member.role = req.body.role || 'member';
+    var newRole = req.body.role || 'member';
+    member.role = newRole;
     await club.save();
+
+    var roleLabel = newRole === 'vice_president' ? '副社长' : '普通成员';
+    await createNotification(req.params.userId, 'member_joined', '角色变更', '你在社团「' + club.name + '」中的角色已变更为' + roleLabel + '。', club._id.toString());
 
     return success(res, { member }, '角色更新成功');
   } catch (err) {
@@ -98,6 +102,8 @@ router.delete('/:clubId/members/:userId', auth, async (req, res) => {
     club.members.splice(memberIndex, 1);
     club.memberCount = club.members.length;
     await club.save();
+
+    await createNotification(req.params.userId, 'member_left', '你已被移出社团', '你已被移出社团「' + club.name + '」。', club._id.toString());
 
     return success(res, null, '成员已移除');
   } catch (err) {
