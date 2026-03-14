@@ -25,14 +25,17 @@
 
     <view class="section">
       <text class="section-title">成员 ({{ club.members.length }})</text>
-      <view class="member-list-detail">
-        <view class="member-row" v-for="(m, index) in club.members" :key="index">
-          <view class="member-avatar">{{ getMemberName(m).charAt(0) }}</view>
-          <text class="member-name">{{ getMemberName(m) }}</text>
-          <text class="member-role-badge" :class="m.role">{{ roleText(m.role) }}</text>
-          <view class="member-actions" v-if="isPresident && getMemberId(m) !== currentUserId">
-            <text class="role-btn" v-if="m.role === 'member'" @click="setRole(m, 'vice_president')">设为副社长</text>
-            <text class="role-btn demote" v-if="m.role === 'vice_president'" @click="setRole(m, 'member')">取消副社长</text>
+      <view class="member-list-v2">
+        <view class="member-card" v-for="(m, index) in club.members" :key="index" @click="toggleMemberAction(index)">
+          <view class="member-main">
+            <view class="member-avatar-v2" :class="m.role">{{ getMemberName(m).charAt(0) }}</view>
+            <text class="member-name-v2">{{ getMemberName(m) }}</text>
+            <text class="member-role-v2" :class="m.role">{{ roleText(m.role) }}</text>
+          </view>
+          <view class="member-expand" v-if="isPresident && expandedMember === index && getMemberId(m) !== currentUserId">
+            <button class="expand-btn promote" v-if="m.role === 'member'" @click.stop="setRole(m, 'vice_president')">设为副社长</button>
+            <button class="expand-btn demote" v-if="m.role === 'vice_president'" @click.stop="setRole(m, 'member')">取消副社长</button>
+            <button class="expand-btn remove" @click.stop="removeMember(m)">移除成员</button>
           </view>
         </view>
       </view>
@@ -98,7 +101,8 @@ export default {
       club: null,
       clubActivities: [],
       currentUserId: '',
-      showTransferModal: false
+      showTransferModal: false,
+      expandedMember: -1
     };
   },
   computed: {
@@ -145,6 +149,28 @@ export default {
       if (!path) return '';
       if (path.indexOf('http') === 0) return path;
       return 'http://127.0.0.1:3000' + path;
+    },
+    toggleMemberAction(index) {
+      if (!this.isPresident) return;
+      this.expandedMember = this.expandedMember === index ? -1 : index;
+    },
+    removeMember(m) {
+      var self = this;
+      var uid = self.getMemberId(m);
+      var name = self.getMemberName(m);
+      uni.showModal({
+        title: '移除成员',
+        content: '确定将「' + name + '」从社团中移除吗？',
+        success: function(res) {
+          if (res.confirm) {
+            memberApi.remove(self.club._id, uid).then(function() {
+              uni.showToast({ title: '已移除', icon: 'success' });
+              self.expandedMember = -1;
+              self.loadClub(self.club._id);
+            });
+          }
+        }
+      });
     },
     getMemberId(m) {
       return (m.user && m.user._id) ? m.user._id : m.user;
@@ -263,18 +289,24 @@ export default {
 .desc { font-size: 28rpx; color: #666; line-height: 1.6; display: block; }
 .tags-row { margin-top: 16rpx; display: flex; flex-wrap: wrap; }
 .tag { font-size: 22rpx; color: #4CAF50; background: #E8F5E9; padding: 6rpx 20rpx; border-radius: 20rpx; margin: 0 12rpx 12rpx 0; }
-.member-list-detail { }
-.member-row { display: flex; align-items: center; padding: 16rpx 0; border-bottom: 1rpx solid #f5f5f5; }
-.member-row:last-child { border-bottom: none; }
-.member-avatar { width: 56rpx; height: 56rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24rpx; margin-right: 12rpx; flex-shrink: 0; }
-.member-name { font-size: 28rpx; color: #333; flex: 1; }
-.member-role-badge { font-size: 20rpx; padding: 4rpx 14rpx; border-radius: 12rpx; flex-shrink: 0; }
-.member-role-badge.president { background: #FFF3E0; color: #E65100; }
-.member-role-badge.vice_president { background: #E3F2FD; color: #1976D2; }
-.member-role-badge.member { background: #f5f5f5; color: #999; }
-.member-actions { flex-shrink: 0; margin-left: 12rpx; }
-.role-btn { font-size: 22rpx; color: #1976D2; background: #E3F2FD; padding: 6rpx 16rpx; border-radius: 8rpx; }
-.role-btn.demote { color: #E65100; background: #FFF3E0; }
+.member-list-v2 { }
+.member-card { border-bottom: 1rpx solid #f0f0f0; }
+.member-card:last-child { border-bottom: none; }
+.member-main { display: flex; align-items: center; padding: 20rpx 0; }
+.member-avatar-v2 { width: 64rpx; height: 64rpx; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 26rpx; font-weight: bold; margin-right: 16rpx; flex-shrink: 0; background: #4CAF50; }
+.member-avatar-v2.president { background: #FF9800; }
+.member-avatar-v2.vice_president { background: #2196F3; }
+.member-avatar-v2.member { background: #4CAF50; }
+.member-name-v2 { font-size: 28rpx; color: #333; flex: 1; }
+.member-role-v2 { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 16rpx; flex-shrink: 0; }
+.member-role-v2.president { background: #FFF3E0; color: #E65100; }
+.member-role-v2.vice_president { background: #E3F2FD; color: #1976D2; }
+.member-role-v2.member { background: #f5f5f5; color: #999; }
+.member-expand { display: flex; padding: 0 0 16rpx 80rpx; }
+.member-expand button { flex: 1; height: 60rpx; line-height: 60rpx; font-size: 24rpx; border: none; border-radius: 8rpx; margin: 0 6rpx; }
+.expand-btn.promote { background: #E3F2FD; color: #1976D2; }
+.expand-btn.demote { background: #FFF3E0; color: #E65100; }
+.expand-btn.remove { background: #FFEBEE; color: #f44336; }
 .activity-history { }
 .history-item { display: flex; justify-content: space-between; align-items: center; padding: 16rpx 0; border-bottom: 1rpx solid #f5f5f5; }
 .history-item:last-child { border-bottom: none; }
