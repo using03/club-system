@@ -60,6 +60,9 @@
       <button class="btn-manage" @click="createActivity">发布活动</button>
       <button class="btn-transfer" @click="showTransferModal = true">转让社长</button>
     </view>
+    <view class="actions" v-else>
+      <button class="btn-leave" @click="leaveClub">退出社团</button>
+    </view>
 
     <view class="transfer-modal" v-if="showTransferModal" @click="showTransferModal = false">
       <view class="modal-content" @click.stop="">
@@ -74,9 +77,6 @@
         </view>
         <button class="btn-cancel-modal" @click="showTransferModal = false">取消</button>
       </view>
-    </view>
-    <view class="actions" v-else>
-      <button class="btn-leave" @click="leaveClub">退出社团</button>
     </view>
   </view>
 </template>
@@ -162,6 +162,11 @@ export default {
       uni.navigateTo({ url: '/pages/activity/detail?id=' + id });
     },
     async joinClub() {
+      if (!this.currentUserId) {
+        uni.showToast({ title: '请先登录', icon: 'none' });
+        setTimeout(function() { uni.navigateTo({ url: '/pages/login/index' }); }, 500);
+        return;
+      }
       try {
         await memberApi.join(this.club._id);
         uni.showToast({ title: '加入成功', icon: 'success' });
