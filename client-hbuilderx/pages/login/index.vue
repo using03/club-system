@@ -16,7 +16,7 @@
         <input v-model="form.username" placeholder="请输入用户名" class="input" />
       </view>
       <view class="form-group">
-        <input v-model="form.password" type="password" placeholder="请输入密码" class="input" />
+        <input v-model="form.password" password placeholder="请输入密码" class="input" />
       </view>
       <view v-if="!isLogin" class="form-group">
         <input v-model="form.nickname" placeholder="请输入昵称" class="input" />
