@@ -49,12 +49,11 @@
       </view>
     </view>
 
-    <view class="section" v-if="registrations.length > 0">
-      <text class="section-title">已报名 ({{ registrations.length }})</text>
+    <view class="section" v-if="approvedRegs.length > 0">
+      <text class="section-title">已报名 ({{ approvedRegs.length }})</text>
       <view class="reg-list">
-        <view class="reg-item" v-for="(r, index) in registrations" :key="index">
+        <view class="reg-item" v-for="(r, index) in approvedRegs" :key="index">
           <text class="reg-name">{{ getRegUserName(r) }}</text>
-          <text class="reg-status" :class="r.status">{{ regStatusText(r.status) }}</text>
         </view>
       </view>
     </view>
@@ -155,6 +154,9 @@ export default {
       var org = this.activity.organizer;
       if (org && org._id) return org._id === this.currentUserId;
       return org === this.currentUserId;
+    },
+    approvedRegs() {
+      return this.registrations.filter(function(r) { return r.status === 'approved'; });
     },
     hasPendingRegs() {
       for (var i = 0; i < this.registrations.length; i++) {
