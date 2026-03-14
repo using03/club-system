@@ -16,6 +16,14 @@ router.post('/:activityId', auth, async (req, res) => {
       return error(res, '当前活动不在签到阶段');
     }
 
+    var now = new Date();
+    if (activity.startTime && now < activity.startTime) {
+      return error(res, '活动尚未开始，无法签到');
+    }
+    if (activity.endTime && now > activity.endTime) {
+      return error(res, '活动已结束，无法签到');
+    }
+
     const registration = await Registration.findOne({
       user: req.userId,
       activity: req.params.activityId,
