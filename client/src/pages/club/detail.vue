@@ -2,7 +2,7 @@
   <view class="club-detail" v-if="club">
     <view class="header">
       <view class="club-avatar" v-if="!club.logo">{{ club.name.charAt(0) }}</view>
-      <image class="club-logo" v-else :src="getImageUrl(club.logo)" mode="aspectFill"></image>
+      <image class="club-logo" v-else :src="getImageUrl(club.logo)" mode="aspectFill" style="width:120rpx;height:120rpx;border-radius:50%;"></image>
       <view class="header-info">
         <text class="club-name">{{ club.name }}</text>
         <text class="club-category">{{ club.category }} · {{ club.memberCount }}人</text>

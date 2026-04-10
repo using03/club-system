@@ -12,7 +12,7 @@
     </view>
     <view class="list">
       <view class="activity-card" v-for="act in activities" :key="act._id" @click="goDetail(act._id)">
-        <image v-if="act.coverImage" :src="getCoverUrl(act.coverImage)" class="card-cover" mode="aspectFill"></image>
+        <image v-if="act.coverImage" :src="getCoverUrl(act.coverImage)" class="card-cover" mode="aspectFill" style="width:100%;height:200rpx;"></image>
         <view class="card-header">
           <text class="activity-title">{{ act.title }}</text>
           <text class="status-badge" :class="act.status">{{ statusText(act.status) }}</text>

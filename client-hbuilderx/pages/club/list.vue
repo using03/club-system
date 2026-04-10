@@ -15,7 +15,7 @@
     </view>
     <view class="list">
       <view class="club-item" v-for="club in clubs" :key="club._id" @click="goDetail(club._id)">
-        <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
+        <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill" style="width:96rpx;height:96rpx;border-radius:50%;"></image>
         <view v-else class="club-avatar">{{ club.name.charAt(0) }}</view>
         <view class="club-info">
           <text class="club-name">{{ club.name }}</text>

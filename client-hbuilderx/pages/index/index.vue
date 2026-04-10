@@ -13,7 +13,7 @@
       <scroll-view scroll-x class="club-scroll">
         <view class="club-card" v-for="club in clubs" :key="club._id" @click="goClubDetail(club._id)">
           <view class="club-avatar-wrap">
-            <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
+            <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill" style="width:80rpx;height:80rpx;border-radius:50%;"></image>
             <view v-else class="club-avatar">{{ club.name.charAt(0) }}</view>
           </view>
           <text class="club-name">{{ club.name }}</text>
