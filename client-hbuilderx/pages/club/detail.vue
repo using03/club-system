@@ -278,7 +278,7 @@ export default {
 .club-detail { padding-bottom: 120rpx; }
 .header { display: flex; align-items: center; padding: 32rpx; background: linear-gradient(135deg, #4CAF50, #66BB6A); color: #fff; }
 .club-avatar { width: 120rpx; height: 120rpx; border-radius: 50%; background: rgba(255,255,255,0.3); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 48rpx; font-weight: bold; margin-right: 24rpx; flex-shrink: 0; }
-.club-logo { width: 120rpx !important; height: 120rpx !important; border-radius: 50%; margin-right: 24rpx; flex-shrink: 0; }
+.club-logo { width: 120rpx; height: 120rpx; border-radius: 50%; margin-right: 24rpx; flex-shrink: 0; }
 .header-info { flex: 1; }
 .club-name { font-size: 36rpx; font-weight: bold; display: block; }
 .club-category { font-size: 24rpx; opacity: 0.9; margin-top: 8rpx; display: block; }

@@ -101,7 +101,7 @@ export default {
 .list { padding: 20rpx; }
 .club-item { display: flex; background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06); }
 .club-avatar { width: 96rpx; height: 96rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 36rpx; font-weight: bold; flex-shrink: 0; margin-right: 20rpx; }
-.club-logo { width: 96rpx !important; height: 96rpx !important; border-radius: 50%; flex-shrink: 0; margin-right: 20rpx; }
+.club-logo { width: 96rpx; height: 96rpx; border-radius: 50%; flex-shrink: 0; margin-right: 20rpx; }
 .club-info { flex: 1; }
 .club-name { font-size: 30rpx; font-weight: bold; color: #333; display: block; }
 .club-desc { font-size: 24rpx; color: #666; margin-top: 8rpx; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

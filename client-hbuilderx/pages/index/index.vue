@@ -142,7 +142,7 @@ export default {
   display: flex; align-items: center; justify-content: center;
   font-size: 32rpx; font-weight: bold;
 }
-.club-logo { width: 80rpx !important; height: 80rpx !important; border-radius: 50%; display: block; }
+.club-logo { width: 80rpx; height: 80rpx; border-radius: 50%; display: block; object-fit: cover; }
 .club-name { font-size: 26rpx; color: #333; font-weight: 500; }
 .club-category { font-size: 20rpx; color: #999; margin-top: 4rpx; }
 .club-members { font-size: 20rpx; color: #4CAF50; margin-top: 4rpx; }
