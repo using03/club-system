@@ -13,7 +13,7 @@
       <scroll-view scroll-x class="club-scroll">
         <view class="club-card" v-for="club in clubs" :key="club._id" @click="goClubDetail(club._id)">
           <view class="club-avatar-wrap">
-            <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill" style="width:80rpx;height:80rpx;border-radius:50%;"></image>
+            <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
             <view v-else class="club-avatar">{{ club.name.charAt(0) }}</view>
           </view>
           <text class="club-name">{{ club.name }}</text>
@@ -142,7 +142,7 @@ export default {
   display: flex; align-items: center; justify-content: center;
   font-size: 32rpx; font-weight: bold;
 }
-.club-logo { width: 80rpx; height: 80rpx; border-radius: 50%; display: block; object-fit: cover; }
+.club-logo { width: 80rpx !important; height: 80rpx !important; border-radius: 50%; display: block; }
 .club-name { font-size: 26rpx; color: #333; font-weight: 500; }
 .club-category { font-size: 20rpx; color: #999; margin-top: 4rpx; }
 .club-members { font-size: 20rpx; color: #4CAF50; margin-top: 4rpx; }

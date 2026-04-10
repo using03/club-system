@@ -1,7 +1,7 @@
 <template>
   <view class="activity-detail" v-if="activity">
     <view class="cover-wrap" v-if="activity.coverImage">
-      <image class="cover-image" :src="getImageUrl(activity.coverImage)" mode="aspectFill" style="width:100%;height:360rpx;border-radius:16rpx;" @click="previewCover"></image>
+      <image class="cover-image" :src="getImageUrl(activity.coverImage)" mode="aspectFill" @click="previewCover"></image>
     </view>
     <view class="header">
       <text class="title">{{ activity.title }}</text>

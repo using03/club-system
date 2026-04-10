@@ -2,7 +2,7 @@
   <view class="my-clubs-page">
     <view v-if="clubs.length > 0" class="list">
       <view class="club-item" v-for="(club, index) in clubs" :key="index" @click="goDetail(club)">
-        <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill" style="width:96rpx;height:96rpx;border-radius:50%;"></image>
+        <image v-if="club.logo" :src="getLogoUrl(club.logo)" class="club-logo" mode="aspectFill"></image>
         <view v-else class="club-avatar" :class="club.status">{{ club.name.charAt(0) }}</view>
         <view class="club-info">
           <view class="name-row">
@@ -144,7 +144,7 @@ export default {
 .club-avatar { width: 96rpx; height: 96rpx; border-radius: 50%; background: #4CAF50; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 36rpx; font-weight: bold; flex-shrink: 0; margin-right: 20rpx; }
 .club-avatar.pending { background: #ff9800; }
 .club-avatar.inactive { background: #999; }
-.club-logo { width: 96rpx; height: 96rpx; border-radius: 50%; flex-shrink: 0; margin-right: 20rpx; }
+.club-logo { width: 96rpx !important; height: 96rpx !important; border-radius: 50%; flex-shrink: 0; margin-right: 20rpx; }
 .club-info { flex: 1; overflow: hidden; }
 .name-row { display: flex; align-items: center; }
 .club-name { font-size: 30rpx; font-weight: bold; color: #333; }
