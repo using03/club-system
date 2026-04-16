@@ -3,6 +3,7 @@ const Club = require('../models/Club');
 const { success, error } = require('../utils/response');
 const { auth } = require('../middleware/auth');
 const { createNotification } = require('../utils/notify');
+const { addToBlacklist } = require('../utils/tokenBlacklist');
 
 const router = express.Router();
 
@@ -80,6 +81,7 @@ router.put('/:clubId/members/:userId/role', auth, async (req, res) => {
 
     var roleLabel = newRole === 'vice_president' ? '副社长' : '普通成员';
     await createNotification(req.params.userId, 'member_joined', '角色变更', '你在社团「' + club.name + '」中的角色已变更为' + roleLabel + '。', club._id.toString());
+    addToBlacklist(req.params.userId);
 
     return success(res, { member }, '角色更新成功');
   } catch (err) {
@@ -104,6 +106,7 @@ router.delete('/:clubId/members/:userId', auth, async (req, res) => {
     await club.save();
 
     await createNotification(req.params.userId, 'member_left', '你已被移出社团', '你已被移出社团「' + club.name + '」。', club._id.toString());
+    addToBlacklist(req.params.userId);
 
     return success(res, null, '成员已移除');
   } catch (err) {
@@ -153,6 +156,9 @@ router.put('/:clubId/transfer', auth, async (req, res) => {
         await createNotification(mid, 'member_joined', '社长变更', '社团「' + club.name + '」的社长已由 ' + req.user.nickname + ' 转让给 ' + (newUser ? newUser.nickname : '新社长'), club._id.toString());
       }
     }
+
+    addToBlacklist(req.userId);
+    addToBlacklist(newPresidentId);
 
     return success(res, { club: club }, '社长已转让');
   } catch (err) {

@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { error } = require('../utils/response');
+const { isBlacklisted } = require('../utils/tokenBlacklist');
 
 const auth = async (req, res, next) => {
   try {
@@ -10,6 +11,11 @@ const auth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (isBlacklisted(decoded.id, decoded.iat)) {
+      return error(res, '权限已变更，请重新登录', 401);
+    }
+
     const user = await User.findById(decoded.id);
     if (!user) {
       return error(res, '用户不存在', 401);

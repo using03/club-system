@@ -41,7 +41,7 @@
               <text class="tag" v-if="act.club">{{ act.club.name }}</text>
               <text class="tag status" :class="act.status">{{ statusText(act.status) }}</text>
               <text class="tag" v-if="act.maxParticipants">限{{ act.maxParticipants }}人</text>
-              <text class="tag act-tag" v-for="(t, i) in (act.tags || [])" :key="'t'+i">{{ t }}</text>
+              <text class="tag act-tag" v-for="(t, i) in (act.tags || [])" :key="i">{{ t }}</text>
             </view>
           </view>
         </view>
